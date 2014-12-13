@@ -58,6 +58,16 @@ void ksighandler(int signum){
     }
 }
 
+/*********************************************************************************************************
+ *
+ *   @Nombre: connexio
+ *   @Def: Función que sirve para conectar Gekko con el servicio TumblingDice.
+ *   @Arg:   In: -
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
 int connexio(){
     Trama trama;
     int i;
@@ -100,6 +110,16 @@ int connexio(){
     }
     
 }
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: actualitzarInformació
+ *   @Def: Función que sirve para actualizar las dadas recibidas del servicio TumblingDice a la variable global ibex.
+ *   @Arg:   In: -
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
 
 void actualitzarInformacio(){
     int i, max;
@@ -175,6 +195,16 @@ void actualitzarInformacio(){
         write(1, "Dades actualitzades\n", strlen("Dades actualitzades\n"));
     }
 }
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: desconnexio
+ *   @Def: Función que sirve para desconectar Gekko con el servicio TumblingDice.
+ *   @Arg:   In: -
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
 
 void desconnexio(){
     Trama trama;
