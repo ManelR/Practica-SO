@@ -7,8 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3B48D15B1A3CB614008CD872 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D15A1A3CB614008CD872 /* main.c */; };
-		3B48D1621A3CB9C0008CD872 /* hola.c in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D1611A3CB9C0008CD872 /* hola.c */; };
+		3B48D1821A3CBDC1008CD872 /* dozer.c in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D1771A3CBDC1008CD872 /* dozer.c */; };
+		3B48D1831A3CBDC1008CD872 /* Shell.c in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D17A1A3CBDC1008CD872 /* Shell.c */; };
+		3B48D1841A3CBDC1008CD872 /* Fitxer_dozer.c in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D17B1A3CBDC1008CD872 /* Fitxer_dozer.c */; };
+		3B48D1851A3CBDC1008CD872 /* LlistaPDI.c in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D17E1A3CBDC1008CD872 /* LlistaPDI.c */; };
+		3B48D1861A3CBDC1008CD872 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D1801A3CBDC1008CD872 /* makefile */; };
+		3B48D18E1A3CC07D008CD872 /* gekko.c in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D1871A3CC07D008CD872 /* gekko.c */; };
+		3B48D18F1A3CC07D008CD872 /* Fitxer_gekko.c in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D18C1A3CC07D008CD872 /* Fitxer_gekko.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,8 +30,24 @@
 
 /* Begin PBXFileReference section */
 		3B48D1571A3CB614008CD872 /* Practica-SO */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Practica-SO"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3B48D15A1A3CB614008CD872 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		3B48D1611A3CB9C0008CD872 /* hola.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hola.c; sourceTree = "<group>"; };
+		3B48D1771A3CBDC1008CD872 /* dozer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dozer.c; sourceTree = "<group>"; };
+		3B48D1781A3CBDC1008CD872 /* config.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.dat; sourceTree = "<group>"; };
+		3B48D1791A3CBDC1008CD872 /* Tipus_dozer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tipus_dozer.h; sourceTree = "<group>"; };
+		3B48D17A1A3CBDC1008CD872 /* Shell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Shell.c; sourceTree = "<group>"; };
+		3B48D17B1A3CBDC1008CD872 /* Fitxer_dozer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Fitxer_dozer.c; sourceTree = "<group>"; };
+		3B48D17C1A3CBDC1008CD872 /* Shell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shell.h; sourceTree = "<group>"; };
+		3B48D17D1A3CBDC1008CD872 /* Fitxer_dozer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Fitxer_dozer.h; sourceTree = "<group>"; };
+		3B48D17E1A3CBDC1008CD872 /* LlistaPDI.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LlistaPDI.c; sourceTree = "<group>"; };
+		3B48D17F1A3CBDC1008CD872 /* LlistaPDI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LlistaPDI.h; sourceTree = "<group>"; };
+		3B48D1801A3CBDC1008CD872 /* makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
+		3B48D1811A3CBDC1008CD872 /* stock.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = stock.dat; sourceTree = "<group>"; };
+		3B48D1871A3CC07D008CD872 /* gekko.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gekko.c; sourceTree = "<group>"; };
+		3B48D1881A3CC07D008CD872 /* Tipus_gekko.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tipus_gekko.h; sourceTree = "<group>"; };
+		3B48D1891A3CC07D008CD872 /* config_tumblingdice.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config_tumblingdice.dat; sourceTree = "<group>"; };
+		3B48D18A1A3CC07D008CD872 /* TumblingDice */ = {isa = PBXFileReference; lastKnownFileType = file; path = TumblingDice; sourceTree = "<group>"; };
+		3B48D18B1A3CC07D008CD872 /* Fitxer_gekko.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Fitxer_gekko.h; sourceTree = "<group>"; };
+		3B48D18C1A3CC07D008CD872 /* Fitxer_gekko.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Fitxer_gekko.c; sourceTree = "<group>"; };
+		3B48D18D1A3CC07D008CD872 /* ibex.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ibex.dat; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,10 +80,42 @@
 		3B48D1591A3CB614008CD872 /* Practica-SO */ = {
 			isa = PBXGroup;
 			children = (
-				3B48D15A1A3CB614008CD872 /* main.c */,
-				3B48D1611A3CB9C0008CD872 /* hola.c */,
+				3B48D1801A3CBDC1008CD872 /* makefile */,
+				3B48D1761A3CBD5B008CD872 /* Dozer */,
+				3B48D1751A3CBD55008CD872 /* Gekko */,
 			);
 			path = "Practica-SO";
+			sourceTree = "<group>";
+		};
+		3B48D1751A3CBD55008CD872 /* Gekko */ = {
+			isa = PBXGroup;
+			children = (
+				3B48D1871A3CC07D008CD872 /* gekko.c */,
+				3B48D1881A3CC07D008CD872 /* Tipus_gekko.h */,
+				3B48D1891A3CC07D008CD872 /* config_tumblingdice.dat */,
+				3B48D18A1A3CC07D008CD872 /* TumblingDice */,
+				3B48D18B1A3CC07D008CD872 /* Fitxer_gekko.h */,
+				3B48D18C1A3CC07D008CD872 /* Fitxer_gekko.c */,
+				3B48D18D1A3CC07D008CD872 /* ibex.dat */,
+			);
+			name = Gekko;
+			sourceTree = "<group>";
+		};
+		3B48D1761A3CBD5B008CD872 /* Dozer */ = {
+			isa = PBXGroup;
+			children = (
+				3B48D1771A3CBDC1008CD872 /* dozer.c */,
+				3B48D1781A3CBDC1008CD872 /* config.dat */,
+				3B48D1791A3CBDC1008CD872 /* Tipus_dozer.h */,
+				3B48D17A1A3CBDC1008CD872 /* Shell.c */,
+				3B48D17B1A3CBDC1008CD872 /* Fitxer_dozer.c */,
+				3B48D17C1A3CBDC1008CD872 /* Shell.h */,
+				3B48D17D1A3CBDC1008CD872 /* Fitxer_dozer.h */,
+				3B48D17E1A3CBDC1008CD872 /* LlistaPDI.c */,
+				3B48D17F1A3CBDC1008CD872 /* LlistaPDI.h */,
+				3B48D1811A3CBDC1008CD872 /* stock.dat */,
+			);
+			name = Dozer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -121,8 +174,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3B48D15B1A3CB614008CD872 /* main.c in Sources */,
-				3B48D1621A3CB9C0008CD872 /* hola.c in Sources */,
+				3B48D1831A3CBDC1008CD872 /* Shell.c in Sources */,
+				3B48D18F1A3CC07D008CD872 /* Fitxer_gekko.c in Sources */,
+				3B48D1821A3CBDC1008CD872 /* dozer.c in Sources */,
+				3B48D18E1A3CC07D008CD872 /* gekko.c in Sources */,
+				3B48D1851A3CBDC1008CD872 /* LlistaPDI.c in Sources */,
+				3B48D1841A3CBDC1008CD872 /* Fitxer_dozer.c in Sources */,
+				3B48D1861A3CBDC1008CD872 /* makefile in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
