@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Guille Martínez-Ubierna i Manel Roca. All rights reserved.
 //
 
-#include "LlistaPDI.h"
+#include "LlistaPDIAccio.h"
 #include "Tipus_dozer.h"
 #include "Fitxer_dozer.h"
 #include "Shell.h"
@@ -33,7 +33,7 @@ void desconnexio();
  *********************************************************************************************************/
 
 void kctrlc(){
-    LlistaPDI_destrueix(&stOperador.llistaAccions);
+    LlistaPDIAccio_destrueix(&stOperador.llistaAccions);
     desconnexio();
     exit(0);
 }
@@ -132,7 +132,7 @@ void desconnexio(){
 int main() {
     int file_stock, file_config, sortir = 0;
     
-    stOperador.llistaAccions = LlistaPDI_crea();
+    stOperador.llistaAccions = LlistaPDIAccio_crea();
     signal(SIGINT, ksighandler);
     
     file_stock = open("stock.dat", O_RDONLY);

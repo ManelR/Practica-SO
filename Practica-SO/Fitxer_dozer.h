@@ -10,7 +10,7 @@
 #define __Fase_1__Fitxer__
 
 #include "Tipus_dozer.h"
-#include "LlistaPDI.h"
+#include "LlistaPDIAccio.h"
 
 void Fitxer_carregaFitxerStock(int file_stock, Operador* stOperador);
 void Fitxer_carregaFitxerConfig(int file_config, IpInfo* stIP);

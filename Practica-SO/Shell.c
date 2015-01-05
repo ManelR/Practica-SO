@@ -55,21 +55,21 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador){
     //Analitza Comanda
     if (!strcmp("exit", sComanda)) {
         write(1, "\nSayonara\n", sizeof("\nSayonara\n"));
-        LlistaPDI_destrueix(&stOperador->llistaAccions);
+        LlistaPDIAccio_destrueix(&stOperador->llistaAccions);
         *sortir = 1;
     }else if(!strcmp("show me the money", sComanda)){
         bzero(sText, sizeof(sText));
         sprintf(sText, "\n%.2f€\n\n", stOperador->fDinersTotals);
         write(1, sText, sizeof(sText));
     }else if(!strcmp("show stock", sComanda)){
-        LlistaPDI_vesInici(&stOperador->llistaAccions);
+        LlistaPDIAccio_vesInici(&stOperador->llistaAccions);
         write(1, "\n", sizeof("\n"));
-        while (!LlistaPDI_fi(stOperador->llistaAccions)) {
-            a = LlistaPDI_consulta(stOperador->llistaAccions);
+        while (!LlistaPDIAccio_fi(stOperador->llistaAccions)) {
+            a = LlistaPDIAccio_consulta(stOperador->llistaAccions);
             bzero(sText, sizeof(sText));
             sprintf(sText, "%s-%d\n",a.cTicker, a.nAccions);
             write(1, sText, sizeof(sText));
-            LlistaPDI_avanca(&stOperador->llistaAccions);
+            LlistaPDIAccio_avanca(&stOperador->llistaAccions);
         }
         write(1, "\n", sizeof("\n"));
         

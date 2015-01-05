@@ -28,7 +28,7 @@ typedef struct{
 }Trama;
 
 typedef struct{
-    LlistaPDI llistaAccions;
+    LlistaPDIAccio llistaAccions;
     float fDinersTotals;
     char cNom[100];
 }Operador;

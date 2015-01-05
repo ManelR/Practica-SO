@@ -1,13 +1,13 @@
 //
-//  LlistaPDI.h
+//  LlistaPDIAccio.h
 //  GeneraLots
 //
 //  Created by Manel Roca & Guillermo Martínez-Ubierna on 2/11/14.
 //  Copyright (c) 2014 Guille Martínez-Ubierna i Manel Roca. All rights reserved.
 //
 
-#ifndef LlistaPDI_h
-#define LlistaPDI_h
+#ifndef LlistaPDIAccio_h
+#define LlistaPDIAccio_h
 
 typedef struct{
     char cTicker[6];
@@ -22,17 +22,17 @@ typedef struct n2{
 typedef struct{
     Nodec * pstCap;
     Nodec * pstAnt;
-}LlistaPDI;
+}LlistaPDIAccio;
 
-LlistaPDI LlistaPDI_crea();
-void LlistaPDI_insereix(LlistaPDI * l, Accio a);
-Accio LlistaPDI_consulta(LlistaPDI l);
-void LlistaPDI_esborra(LlistaPDI * l);
-void LlistaPDI_avanca(LlistaPDI * l);
-void LlistaPDI_vesInici(LlistaPDI * l);
-int LlistaPDI_fi(LlistaPDI l);
-int LlistaPDI_buida(LlistaPDI l);
-void LlistaPDI_destrueix(LlistaPDI * l);
+LlistaPDIAccio LlistaPDIAccio_crea();
+void LlistaPDIAccio_insereix(LlistaPDIAccio * l, Accio a);
+Accio LlistaPDIAccio_consulta(LlistaPDIAccio l);
+void LlistaPDIAccio_esborra(LlistaPDIAccio * l);
+void LlistaPDIAccio_avanca(LlistaPDIAccio * l);
+void LlistaPDIAccio_vesInici(LlistaPDIAccio * l);
+int LlistaPDIAccio_fi(LlistaPDIAccio l);
+int LlistaPDIAccio_buida(LlistaPDIAccio l);
+void LlistaPDIAccio_destrueix(LlistaPDIAccio * l);
 
 
 #endif

@@ -1,5 +1,5 @@
 //
-//  LlistaPDI.c
+//  LlistaPDIAccio.c
 //
 //
 //  Created by Manel Roca & Guillermo Martínez-Ubierna on 2/11/14.
@@ -9,8 +9,8 @@
 #include "LlistaPDIAccio.h"
 #include "Tipus_dozer.h"
 
-LlistaPDI LlistaPDI_crea(){
-    LlistaPDI stLlista;
+LlistaPDIAccio LlistaPDIAccio_crea(){
+    LlistaPDIAccio stLlista;
     stLlista.pstCap = (Nodec *)malloc(sizeof(Nodec));
     if (stLlista.pstCap == NULL) {
         write(1, "Error al crear la llista!\n", strlen("Error al crear la llista!\n"));
@@ -21,7 +21,7 @@ LlistaPDI LlistaPDI_crea(){
     return stLlista;
 }
 
-void LlistaPDI_insereix(LlistaPDI * l, Accio a){
+void LlistaPDIAccio_insereix(LlistaPDIAccio * l, Accio a){
     Nodec * aux;
     l->pstAnt = l->pstCap;
     //Anar al final
@@ -42,7 +42,7 @@ void LlistaPDI_insereix(LlistaPDI * l, Accio a){
     
 }
 
-Accio LlistaPDI_consulta(LlistaPDI l){
+Accio LlistaPDIAccio_consulta(LlistaPDIAccio l){
     Accio a;
     a.nAccions = -1;
     if (l.pstAnt->pstSeg != NULL) {
@@ -51,7 +51,7 @@ Accio LlistaPDI_consulta(LlistaPDI l){
     return a;
 }
 
-void LlistaPDI_esborra(LlistaPDI * l){
+void LlistaPDIAccio_esborra(LlistaPDIAccio * l){
     Nodec * aux;
     if(l->pstAnt->pstSeg == NULL){
         write(1,"Error al esborrar!\n",strlen("Error al esborrar!\n"));
@@ -62,26 +62,26 @@ void LlistaPDI_esborra(LlistaPDI * l){
     }
 }
 
-void LlistaPDI_avanca(LlistaPDI * l){
+void LlistaPDIAccio_avanca(LlistaPDIAccio * l){
     if (l->pstAnt->pstSeg == NULL) {
         write(1,"No es pot avançar!\n",strlen("No es pot avançar!\n"));
     }else{
         l->pstAnt = l->pstAnt->pstSeg;
     }
 }
-void LlistaPDI_vesInici(LlistaPDI * l){
+void LlistaPDIAccio_vesInici(LlistaPDIAccio * l){
     l->pstAnt = l->pstCap;
 }
 
-int LlistaPDI_fi(LlistaPDI l){
+int LlistaPDIAccio_fi(LlistaPDIAccio l){
     return l.pstAnt->pstSeg == NULL;
 }
 
-int LlistaPDI_buida(LlistaPDI l){
+int LlistaPDIAccio_buida(LlistaPDIAccio l){
     return l.pstCap->pstSeg == NULL;
 }
 
-void LlistaPDI_destrueix(LlistaPDI * l){
+void LlistaPDIAccio_destrueix(LlistaPDIAccio * l){
     Nodec * aux;
     while (l->pstCap != NULL) {
         aux = l->pstCap;
