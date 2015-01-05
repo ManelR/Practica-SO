@@ -12,6 +12,6 @@
 #include <stdio.h>
 #include "Tipus_dozer.h"
 
-void Shell_analitzaComanda(int * sortir, Operador* stOperador);
+void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko);
 
 #endif
