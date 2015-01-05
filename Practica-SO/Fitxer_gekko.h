@@ -13,6 +13,6 @@
 #include "Tipus_gekko.h"
 
 void Fitxer_carregaFitxerConfig(int file_config, IpInfo* stIP);
-void Fitxer_carregaFitxerIbex(int file_ibex, Accio ibex[35]);
+void Fitxer_carregaFitxerIbex(int file_ibex, Accio ibex[35], InfoVentes ventes[35]);
 
 #endif

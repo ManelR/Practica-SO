@@ -11,7 +11,7 @@
 
 LlistaPDIVenta LlistaPDIVenta_crea(){
     LlistaPDIVenta stLlista;
-    stLlista.pstCap = (Nodec *)malloc(sizeof(Nodec));
+    stLlista.pstCap = (Nodev *)malloc(sizeof(Nodev));
     if (stLlista.pstCap == NULL) {
         write(1, "Error al crear la llista!\n", strlen("Error al crear la llista!\n"));
     }else{
@@ -22,14 +22,14 @@ LlistaPDIVenta LlistaPDIVenta_crea(){
 }
 
 void LlistaPDIVenta_insereix(LlistaPDIVenta * l, Venta v){
-    Nodec * aux;
+    Nodev * aux;
     l->pstAnt = l->pstCap;
     //Anar al final
     while (l->pstAnt->pstSeg != NULL) {
         l->pstAnt = l->pstAnt->pstSeg;
     }
     //inserir
-    aux = (Nodec*)malloc(sizeof(Nodec));
+    aux = (Nodev*)malloc(sizeof(Nodev));
     if (aux == NULL) {
          write(1, "Error al inserir!\n", strlen("Error al inserir!\n"));
     }else{
@@ -55,7 +55,7 @@ Venta LlistaPDIVenta_consulta(LlistaPDIVenta l){
 }
 
 void LlistaPDIVenta_esborra(LlistaPDIVenta * l){
-    Nodec * aux;
+    Nodev * aux;
     if(l->pstAnt->pstSeg == NULL){
         write(1,"Error al esborrar!\n",strlen("Error al esborrar!\n"));
     }else{
@@ -85,7 +85,7 @@ int LlistaPDIVenta_buida(LlistaPDIVenta l){
 }
 
 void LlistaPDIVenta_destrueix(LlistaPDIVenta * l){
-    Nodec * aux;
+    Nodev * aux;
     while (l->pstCap != NULL) {
         aux = l->pstCap;
         l->pstCap = l->pstCap->pstSeg;

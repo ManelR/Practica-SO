@@ -65,7 +65,7 @@ void Fitxer_carregaFitxerConfig(int file_config, IpInfo* stIP){
  *
  *********************************************************************************************************/
 
-void Fitxer_carregaFitxerIbex(int file_ibex, Accio ibex[35]){
+void Fitxer_carregaFitxerIbex(int file_ibex, Accio ibex[35], InfoVentes ventes[35]){
     int nContadorIbex = 0, nContador = 0;
     char cAux;
     char sText[100];
@@ -80,6 +80,7 @@ void Fitxer_carregaFitxerIbex(int file_ibex, Accio ibex[35]){
         }
         sText[nContador] = '\0';
         strcpy(ibex[nContadorIbex].cTicker, sText);
+        strcpy(ventes[nContadorIbex].sNom, sText);
         //Lectura del preu
         nContador = 0;
         read(file_ibex, &cAux, 1);
