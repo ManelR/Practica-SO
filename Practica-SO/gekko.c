@@ -224,6 +224,16 @@ void desconnexio(){
     close(sockTumb);
 }
 
+/*********************************************************************************************************
+ *
+ *   @Nombre: dozer
+ *   @Def: Función que utilizan los diferentes threads para funcionar.
+ *   @Arg:   In: int newSocket -> fd del socket que conecta con el dozer.
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
 void* dozer(void * data){
     Trama trama;
     int sortir = 0;
@@ -251,8 +261,17 @@ void* dozer(void * data){
             perror("ERROR reading from socket");
             return NULL;
         }else{
-            if(trama.Tipus == 'Q'){
-                sortir = 1;
+            //S'ha llegit la trama
+            switch (trama.Tipus) {
+                case 'Q':
+                    sortir = 1;
+                    break;
+                case 'X':
+                    //Show IBEX
+                    
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -263,6 +282,16 @@ void* dozer(void * data){
     return NULL;
 }
 
+/*********************************************************************************************************
+ *
+ *   @Nombre: nouDozer
+ *   @Def: Función que sirve para crear una nueva conexión.
+ *   @Arg:   In: int newSocket -> fd del socket que conecta con el dozer.
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
 void nouDozer(int newSockDozer){
     pthread_t thread_id;
     pthread_attr_t attr;
@@ -270,6 +299,16 @@ void nouDozer(int newSockDozer){
     pthread_attr_init(&attr);
     pthread_create(&thread_id, NULL, dozer, (void *)newSockDozer);
 }
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: escoltaDozers
+ *   @Def: Función que utiliza Gekko para esperar la conexión de los diferentes Dozers.
+ *   @Arg:   In: -
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
 
 void escoltaDozers(){
     int sockDozer;
@@ -347,9 +386,8 @@ int main() {
     //Connexió
     if(connexio() < 0){
         exit(-1);
-    }else{
-        
     }
+    
     alarm(stIP.nSegons);
     
     escoltaDozers();
