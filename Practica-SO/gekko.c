@@ -15,6 +15,7 @@
 #define INTENTSCONNEXIO 5
 
 Accio ibex[35];
+InfoVentes ventes[35];
 IpInfo stIP;
 int sockTumb;
 struct sockaddr_in servTumb;
@@ -236,6 +237,22 @@ void desconnexio(){
 
 void showIbex(int fdDozer){
     Trama trama;
+    int i = 0;
+    char sText[100];
+    long long auxNumAccions;
+    //Preparar la trama
+    strcpy(trama.Origen, "Gekko");
+    trama.Tipus = 'X';
+    
+    //Preparar les dades i enviar
+    for (i = 0; i < 35; i++) {
+        auxNumAccions = ibex[i].llAccions;
+        bzero(sText, sizeof(sText));
+        sprintf(sText, "%s\t%f\t%lld", ibex[i].cTicker, ibex[i].fPreu, auxNumAccions);
+        strcpy(trama.Data, sText);
+        //Enviar
+        write(fdDozer, &trama, sizeof(trama));
+    }
     
 }
 
@@ -293,7 +310,7 @@ void* dozer(void * data){
     close((int) data);
     bzero(sFrase, sizeof(sFrase));
     sprintf(sFrase, "%s desconnectat\n", sOperador);
-    write(1, sFrase, sizeof(sFrase));
+    write(1, sFrase, strlen(sFrase));
     return NULL;
 }
 
@@ -373,6 +390,11 @@ int main() {
     signal(SIGINT, ksighandler);
     signal(SIGALRM, ksighandler);
     
+    //Inicialització de les llistes de ventes
+    for (i = 0; i < 35; i++) {
+        ventes[i].llista = LlistaPDIVenta_crea();
+    }
+    
     file_config = open("config_tumblingdice.dat", O_RDONLY);
     if (file_config < 0) {
         write(1, "Error al abrir el fichero\n", strlen("Error al abrir el fichero\n"));
@@ -385,7 +407,7 @@ int main() {
         write(1, "Error al abrir el fichero\n", strlen("Error al abrir el fichero\n"));
         exit(-1);
     }
-    Fitxer_carregaFitxerIbex(file_ibex, ibex);
+    Fitxer_carregaFitxerIbex(file_ibex, ibex, ventes);
     write(1, "IBEX INFO\n", strlen("IBEX INFO\n"));
     for(i = 0; i<35;i++){
         bzero(sText, sizeof(sText));
