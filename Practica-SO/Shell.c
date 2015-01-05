@@ -23,7 +23,7 @@
 
 void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko){
     char sText[100];
-    char* sComanda;
+    char *sComanda, *sComandes, *sNombreAccions, *sTicker;
     char cAux;
     int num = 0;
     int i = 0, mida = 0;
@@ -97,13 +97,73 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko){
                 bzero(sText, sizeof(sText));
                 sprintf(sText, "%s\n",trama.Data);
                 write(1, sText, sizeof(sText));
-
             }
         }
-    }else if (!strcmp("buy", sComanda)){
-        
     }else{
-        write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+        sComandes = (char *) strtok(sComanda, " ");
+        if (!strcmp(sComandes, "buy")) {
+            sComandes = (char*) strtok(NULL," ");
+            if (NULL != sComandes) {
+                strcpy(sTicker, sComandes);
+                sComandes = (char*) strtok(NULL," ");
+                if (NULL != sComandes) {
+                    strcpy(sNombreAccions, sComandes);
+                    sComandes = (char*) strtok(NULL," ");
+                    if (NULL != sComandes) {
+                        write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+                    }else{
+                        //Si hi ha tres paraules
+                        //TODO comprovar-les i enviar
+                    }
+                }else{
+                    write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+                }
+            }else  {
+                write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+            }
+        }else if (!strcmp(sComandes, "sell")){
+            sComandes = (char*) strtok(NULL," ");
+            if (NULL != sComandes) {
+                strcpy(sTicker, sComandes);
+                sComandes = (char*) strtok(NULL," ");
+                if (NULL != sComandes) {
+                    strcpy(sNombreAccions, sComandes);
+                    sComandes = (char*) strtok(NULL," ");
+                    if (NULL != sComandes) {
+                        write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+                    }else{
+                        //Si hi ha tres paraules
+                        //TODO comprovar-les i enviar
+                    }
+                }else{
+                    write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+                }
+            }else  {
+                write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+            }
+        }else if (!strcmp(sComandes, "erase")) {
+            sComandes = (char*) strtok(NULL," ");
+            if (NULL != sComandes) {
+                strcpy(sTicker, sComandes);
+                sComandes = (char*) strtok(NULL," ");
+                if (NULL != sComandes) {
+                    strcpy(sNombreAccions, sComandes);
+                    sComandes = (char*) strtok(NULL," ");
+                    if (NULL != sComandes) {
+                        write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+                    }else{
+                        //Si hi ha tres paraules
+                        //TODO comprovar-les i enviar
+                    }
+                }else{
+                    write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+                }
+            }else  {
+                write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+            }
+        }else{
+            write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+        }
     }
     free(sComanda);
 }
