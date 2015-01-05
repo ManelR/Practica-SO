@@ -100,6 +100,8 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko){
 
             }
         }
+    }else if (!strcmp("buy", sComanda)){
+        
     }else{
         write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
     }
