@@ -153,7 +153,7 @@ int main() {
         exit(-1);
     }
     while(sortir == 0){
-        Shell_analitzaComanda(&sortir, &stOperador);
+        Shell_analitzaComanda(&sortir, &stOperador, sockGekko);
     }
     desconnexio();
     

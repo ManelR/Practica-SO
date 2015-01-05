@@ -7,6 +7,8 @@
 //
 
 #include "Shell.h"
+#define SORIGEN 14
+#define SDADES 100
 
 /*********************************************************************************************************
  *
@@ -19,13 +21,14 @@
  *
  *********************************************************************************************************/
 
-void Shell_analitzaComanda(int * sortir, Operador* stOperador){
+void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko){
     char sText[100];
     char* sComanda;
     char cAux;
     int num = 0;
     int i = 0, mida = 0;
     Accio a;
+    Trama trama;
     
     //Mostar la shell
     bzero(sText, sizeof(sText));
@@ -74,7 +77,29 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador){
         write(1, "\n", sizeof("\n"));
         
     }else if (!strcmp("show ibex", sComanda)){
-        
+        strcpy(trama.Origen, stOperador->cNom);
+        for (i = strlen(trama.Origen); i < SORIGEN; i++) {
+            trama.Origen[i] = '\0';
+        }
+        trama.Tipus = 'X';
+        strcpy(trama.Data, "PETICIO IBEX35");
+        for (i=14; i < SDADES; i++) {
+            trama.Data[i] = '\0';
+        }
+        //Enviar
+        write(sockGekko, &trama, sizeof(trama));
+        //Llegir resposta i comprovar si s'ha pogut establir la connexio
+        for(i=0;i<35;i++){
+            read(sockGekko, &trama, sizeof(trama));
+            if (trama.Tipus != 'X') {
+                write(1, "Error amb la connexió del servidor\n", strlen("Error amb la connexió del servidor\n"));
+            }else{
+                bzero(sText, sizeof(sText));
+                sprintf(sText, "%s\n",trama.Data);
+                write(1, sText, sizeof(sText));
+
+            }
+        }
     }else{
         write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
     }
