@@ -50,11 +50,11 @@ void ksighandler(int signum){
 
 /*********************************************************************************************************
  *
- *   @Nombre: connexio y desconnexio
- *   @Def: Funciones que permiten la conexión y desconexión del operador con el Gekko.
+ *   @Nombre: connexio()
+ *   @Def: Función que permite la conexión del operador con el Gekko.
  *   @Arg:   In: -
  *           Out: -
- *   @Ret: connexió() retorna un int para indicar si se ha podido establecer la conexión
+ *   @Ret: retorna un int para indicar si se ha podido establecer la conexión
  *
  *********************************************************************************************************/
 
@@ -100,6 +100,16 @@ int connexio(){
     }
     
 }
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: desconnexio()
+ *   @Def: Función que permite la desconexión del operador con el Gekko.
+ *   @Arg:   In: -
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
 
 void desconnexio(){
     Trama trama;
