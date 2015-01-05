@@ -34,6 +34,12 @@ typedef struct{
 }Accio;
 
 typedef struct{
+    char sOperador[14];
+    int nNumAccions;
+    int nSocket;
+}Venta;
+
+typedef struct{
     char Origen[14];
     char Tipus;
     char Data[100];
