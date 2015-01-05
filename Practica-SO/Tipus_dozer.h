@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <fcntl.h>
-#include "LlistaPDI.h"
+#include "LlistaPDIAccio.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>

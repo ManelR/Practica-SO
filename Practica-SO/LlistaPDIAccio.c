@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Guille Martínez-Ubierna i Manel Roca. All rights reserved.
 //
 
-#include "LlistaPDI.h"
+#include "LlistaPDIAccio.h"
 #include "Tipus_dozer.h"
 
 LlistaPDI LlistaPDI_crea(){
