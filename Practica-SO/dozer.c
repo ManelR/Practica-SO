@@ -48,6 +48,15 @@ void ksighandler(int signum){
     }
 }
 
+/*********************************************************************************************************
+ *
+ *   @Nombre: connexio y desconnexio
+ *   @Def: Funciones que permiten la conexión y desconexión del operador con el Gekko.
+ *   @Arg:   In: -
+ *           Out: -
+ *   @Ret: connexió() retorna un int para indicar si se ha podido establecer la conexión
+ *
+ *********************************************************************************************************/
 
 int connexio(){
     Trama trama;
@@ -81,7 +90,7 @@ int connexio(){
     }
     //Enviar
     write(sockGekko, &trama, sizeof(trama));
-    //Llegir resposta
+    //Llegir resposta i comprovar si s'ha pogut establir la connexio
     read(sockGekko, &trama, sizeof(trama));
     if (trama.Tipus != 'O') {
         write(1, "Error amb la connexió del servidor\n", strlen("Error amb la connexió del servidor\n"));
@@ -129,7 +138,10 @@ int main() {
         exit(-1);
     }
     Fitxer_carregaFitxerConfig(file_config, &stIP);
-    connexio();
+    //Connexió
+    if(connexio() < 0){
+        exit(-1);
+    }
     while(sortir == 0){
         Shell_analitzaComanda(&sortir, &stOperador);
     }

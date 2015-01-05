@@ -73,6 +73,8 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador){
         }
         write(1, "\n", sizeof("\n"));
         
+    }else if (!strcmp("show ibex", sComanda)){
+        
     }else{
         write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
     }
