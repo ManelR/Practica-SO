@@ -48,7 +48,6 @@ void ksighandler(int signum){
     }
 }
 
-//Hola mon
 
 int connexio(){
     Trama trama;
