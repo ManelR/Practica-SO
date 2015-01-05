@@ -226,6 +226,21 @@ void desconnexio(){
 
 /*********************************************************************************************************
  *
+ *   @Nombre: showIbex
+ *   @Def: Función que sirve para enviar al Dozer el estado actual del IBEX
+ *   @Arg:   In: fdDozer -> fd del Dozer que solicita la información.
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void showIbex(int fdDozer){
+    Trama trama;
+    
+}
+
+/*********************************************************************************************************
+ *
  *   @Nombre: dozer
  *   @Def: Función que utilizan los diferentes threads para funcionar.
  *   @Arg:   In: int newSocket -> fd del socket que conecta con el dozer.
@@ -268,7 +283,7 @@ void* dozer(void * data){
                     break;
                 case 'X':
                     //Show IBEX
-                    
+                    showIbex((int)data);
                     break;
                 default:
                     break;
