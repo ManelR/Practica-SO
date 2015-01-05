@@ -37,6 +37,10 @@ void nouDozer(int newSockDozer);
  *********************************************************************************************************/
 
 void kctrlc(){
+    int i = 0;
+    for (i = 0; i < 35; i++) {
+        LlistaPDIVenta_destrueix(&ventes[i].llista);
+    }
     desconnexio();
     exit(0);
 }
@@ -258,6 +262,81 @@ void showIbex(int fdDozer){
 
 /*********************************************************************************************************
  *
+ *   @Nombre: buy
+ *   @Def: Función que sirve para gestionar las ventas del dozer.
+ *   @Arg:   In: fdDozer -> fd del Dozer que solicita la información.
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void buy(int fdDozer, Trama trama){
+    char sText[100];
+    char sNom[10];
+    int nNumAccions = 0;
+    int nError = 0;
+    float fDiners = 0.0;
+    int i = 0, j = 0;
+    Trama tramaEnviar;
+    
+    strcpy(tramaEnviar.Origen, "Gekko");
+    tramaEnviar.Tipus = 'B';
+    
+    //Analitzar Dades
+    while (trama.Data[i] != '-') {
+        sText[i] = trama.Data[i];
+        i++;
+    }
+    sText[i] = '\0';
+    strcpy(sNom, sText);
+    j = 0;
+    while (trama.Data[i] != '-') {
+        sText[j] = trama.Data[i];
+        i++;
+        j++;
+    }
+    sText[j] = '\0';
+    nNumAccions = atoi(sText);
+    j = 0;
+    while (trama.Data[i] != '\0') {
+        sText[j] = trama.Data[i];
+        i++;
+        j++;
+    }
+    sText[j] = '\0';
+    fDiners = atof(sText);
+    
+    //Comprovar si les accions existeixen
+    j = -1;
+    for (i = 0; i < 35; i++) {
+        if(strcmp(ibex[i].cTicker, sNom) == 0){
+            j = i;
+        }
+    }
+    if (j == -1) {
+        strcpy(tramaEnviar.Data, "Error. L'acció no està dins IBEX35");
+    }else{
+        //Comprovar disponiblitat de les Accions
+        
+        //Comprovar diners totals
+        if( nError == 0){
+            if (ibex[j].fPreu * nNumAccions > fDiners) {
+                strcpy(tramaEnviar.Data, "Error. Capital insuficient");
+            }else{
+                bzero(sText, sizeof(sText));
+                sprintf(sText, "OK-%f", ibex[j].fPreu * nNumAccions);
+                strcpy(tramaEnviar.Data, sText);
+            }
+        }else{
+            strcpy(tramaEnviar.Data, "Error. No hi ha suficients accions");
+        }
+    }
+    //Enviar missatge
+    write(fdDozer, &tramaEnviar, sizeof(tramaEnviar));
+}
+
+/*********************************************************************************************************
+ *
  *   @Nombre: dozer
  *   @Def: Función que utilizan los diferentes threads para funcionar.
  *   @Arg:   In: int newSocket -> fd del socket que conecta con el dozer.
@@ -301,6 +380,9 @@ void* dozer(void * data){
                 case 'X':
                     //Show IBEX
                     showIbex((int)data);
+                    break;
+                case 'B':
+                    buy((int)data, trama);
                     break;
                 default:
                     break;
