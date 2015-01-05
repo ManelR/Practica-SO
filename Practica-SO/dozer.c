@@ -48,6 +48,8 @@ void ksighandler(int signum){
     }
 }
 
+//Hola mon
+
 int connexio(){
     Trama trama;
     int i;
@@ -133,6 +135,7 @@ int main() {
         Shell_analitzaComanda(&sortir, &stOperador);
     }
     desconnexio();
+    
 	return 0;
 }
 
