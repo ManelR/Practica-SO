@@ -1,16 +1,16 @@
 //
-//  LlistaPDIAccio.c
+//  LlistaPDIVenta.c
 //
 //
 //  Created by Manel Roca & Guillermo Martínez-Ubierna on 2/11/14.
 //  Copyright (c) 2014 Guille Martínez-Ubierna i Manel Roca. All rights reserved.
 //
 
-#include "LlistaPDIAccio.h"
+#include "LlistaPDIVenta.h"
 #include "Tipus_dozer.h"
 
-LlistaPDIAccio LlistaPDIAccio_crea(){
-    LlistaPDIAccio stLlista;
+LlistaPDIVenta LlistaPDIVenta_crea(){
+    LlistaPDIVenta stLlista;
     stLlista.pstCap = (Nodec *)malloc(sizeof(Nodec));
     if (stLlista.pstCap == NULL) {
         write(1, "Error al crear la llista!\n", strlen("Error al crear la llista!\n"));
@@ -21,7 +21,7 @@ LlistaPDIAccio LlistaPDIAccio_crea(){
     return stLlista;
 }
 
-void LlistaPDIAccio_insereix(LlistaPDIAccio * l, Accio a){
+void LlistaPDIVenta_insereix(LlistaPDIVenta * l, Venta v){
     Nodec * aux;
     l->pstAnt = l->pstCap;
     //Anar al final
@@ -33,8 +33,9 @@ void LlistaPDIAccio_insereix(LlistaPDIAccio * l, Accio a){
     if (aux == NULL) {
          write(1, "Error al inserir!\n", strlen("Error al inserir!\n"));
     }else{
-        aux->a.nAccions = a.nAccions;
-        strcpy(aux->a.cTicker, a.cTicker);
+        aux->v.nNumAccions = v.nNumAccions;
+        aux->v.nSocket = v.nSocket;
+        strcpy(aux->v.sOperador, v.sOperador);
         aux->pstSeg = l->pstAnt->pstSeg;
         l->pstAnt->pstSeg = aux;
         l->pstAnt = aux;
@@ -42,17 +43,18 @@ void LlistaPDIAccio_insereix(LlistaPDIAccio * l, Accio a){
     
 }
 
-Accio LlistaPDIAccio_consulta(LlistaPDIAccio l){
-    Accio a;
-    a.nAccions = -1;
+Venta LlistaPDIVenta_consulta(LlistaPDIVenta l){
+    Venta v;
+    v.nNumAccions = -1;
     if (l.pstAnt->pstSeg != NULL) {
-        a.nAccions = l.pstAnt->pstSeg->a.nAccions;
-        strcpy(a.cTicker, l.pstAnt->pstSeg->a.cTicker);
+        v.nNumAccions = l.pstAnt->pstSeg->v.nNumAccions;
+        v.nSocket = l.pstAnt->pstSeg->v.nSocket;
+        strcpy(v.sOperador, l.pstAnt->pstSeg->v.sOperador);
     }
-    return a;
+    return v;
 }
 
-void LlistaPDIAccio_esborra(LlistaPDIAccio * l){
+void LlistaPDIVenta_esborra(LlistaPDIVenta * l){
     Nodec * aux;
     if(l->pstAnt->pstSeg == NULL){
         write(1,"Error al esborrar!\n",strlen("Error al esborrar!\n"));
@@ -63,26 +65,26 @@ void LlistaPDIAccio_esborra(LlistaPDIAccio * l){
     }
 }
 
-void LlistaPDIAccio_avanca(LlistaPDIAccio * l){
+void LlistaPDIVenta_avanca(LlistaPDIVenta * l){
     if (l->pstAnt->pstSeg == NULL) {
         write(1,"No es pot avançar!\n",strlen("No es pot avançar!\n"));
     }else{
         l->pstAnt = l->pstAnt->pstSeg;
     }
 }
-void LlistaPDIAccio_vesInici(LlistaPDIAccio * l){
+void LlistaPDIVenta_vesInici(LlistaPDIVenta * l){
     l->pstAnt = l->pstCap;
 }
 
-int LlistaPDIAccio_fi(LlistaPDIAccio l){
+int LlistaPDIVenta_fi(LlistaPDIVenta l){
     return l.pstAnt->pstSeg == NULL;
 }
 
-int LlistaPDIAccio_buida(LlistaPDIAccio l){
+int LlistaPDIVenta_buida(LlistaPDIVenta l){
     return l.pstCap->pstSeg == NULL;
 }
 
-void LlistaPDIAccio_destrueix(LlistaPDIAccio * l){
+void LlistaPDIVenta_destrueix(LlistaPDIVenta * l){
     Nodec * aux;
     while (l->pstCap != NULL) {
         aux = l->pstCap;
