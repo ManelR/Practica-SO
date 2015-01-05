@@ -16,7 +16,7 @@ Fitxer_gekko.o: Fitxer_gekko.c Fitxer_gekko.h Tipus_gekko.h
 	gcc -Wall -Wextra -c Fitxer_gekko.c
 
 LlistaPDIVenta.o: LlistaPDIVenta.c LlistaPDIVenta.h Tipus_gekko.h
-    gcc -Wall -Wextra -c LlistaPDIVenta.c
+	gcc -Wall -Wextra -c LlistaPDIVenta.c
 
 gekko.o: gekko.c Tipus_gekko.h Fitxer_gekko.h LlistaPDIVenta.h
 	gcc -Wall -Wextra -lpthread -c gekko.c

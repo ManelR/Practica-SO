@@ -15,14 +15,14 @@ typedef struct{
     int nSocket;
 }Venta;
 
-typedef struct n2{
+typedef struct n3{
     Venta v;
-    struct n2 *pstSeg;
-}Nodec;
+    struct n3 *pstSeg;
+}Nodev;
 
 typedef struct{
-    Nodec * pstCap;
-    Nodec * pstAnt;
+    Nodev * pstCap;
+    Nodev * pstAnt;
 }LlistaPDIVenta;
 
 LlistaPDIVenta LlistaPDIVenta_crea();
