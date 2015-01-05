@@ -25,7 +25,7 @@ typedef struct{
 }LlistaPDI;
 
 LlistaPDI LlistaPDI_crea();
-void LlistaPDI_insereixOrdenat(LlistaPDI * l, Accio a);
+void LlistaPDI_insereix(LlistaPDI * l, Accio a);
 Accio LlistaPDI_consulta(LlistaPDI l);
 void LlistaPDI_esborra(LlistaPDI * l);
 void LlistaPDI_avanca(LlistaPDI * l);

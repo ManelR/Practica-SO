@@ -58,7 +58,7 @@ void Fitxer_carregaFitxerStock(int file_stock, Operador* stOperador){
         }
         aux_text[nContador] = '\0';
         a.nAccions = atoi(aux_text);
-        LlistaPDI_insereixOrdenat(&stOperador->llistaAccions, a);
+        LlistaPDI_insereix(&stOperador->llistaAccions, a);
         nContador = 0;
     }
     close(file_stock);

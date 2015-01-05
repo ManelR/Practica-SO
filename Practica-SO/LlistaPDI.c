@@ -21,17 +21,12 @@ LlistaPDI LlistaPDI_crea(){
     return stLlista;
 }
 
-void LlistaPDI_insereixOrdenat(LlistaPDI * l, Accio a){
-    int trobat = 0;
+void LlistaPDI_insereix(LlistaPDI * l, Accio a){
     Nodec * aux;
     l->pstAnt = l->pstCap;
-    //Buscar posicio
-    while (l->pstAnt->pstSeg != NULL && !trobat) {
-        if (l->pstAnt->pstSeg->a.nAccions > a.nAccions) {
-            l->pstAnt = l->pstAnt->pstSeg;
-        }else{
-            trobat = 1;
-        }
+    //Anar al final
+    while (l->pstAnt->pstSeg != NULL) {
+        l->pstAnt = l->pstAnt->pstSeg;
     }
     //inserir
     aux = (Nodec*)malloc(sizeof(Nodec));
