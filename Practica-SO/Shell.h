@@ -13,5 +13,6 @@
 #include "Tipus_dozer.h"
 
 void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko);
+void showIbex(Trama trama);
 
 #endif

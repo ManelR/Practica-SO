@@ -30,9 +30,7 @@ void* escoltaGekko(void * data){
         switch (trama.Tipus) {
             case 'X':
                 //Show ibex
-                bzero(sText, sizeof(sText));
-                sprintf(sText, "%s\n",trama.Data);
-                write(1, sText, sizeof(sText));
+                showIbex(trama);
                 break;
             case 'B':
                 //Buy
@@ -56,6 +54,23 @@ void* escoltaGekko(void * data){
         }
     }
     return NULL;
+}
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: showIbex
+ *   @Def: Función que muestra los datos del Ibex recibidos por el Gekko
+ *   @Arg:   In:  Trama que recibe del Gekko de tipo 'X' y ha de mostrar los datos
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void showIbex(Trama trama){
+    char sText[101];
+    bzero(sText, sizeof(sText));
+    sprintf(sText, "%s\n",trama.Data);
+    write(1, sText, sizeof(sText));
 }
 
 /*********************************************************************************************************
