@@ -12,6 +12,54 @@
 
 /*********************************************************************************************************
  *
+ *   @Nombre: escoltaGekko
+ *   @Def: Función que se encarga de escuchar el socket del Gekko y decide que hacer en función de la trama                         que recibe.
+ *   @Arg:   In: int sockGekko -> fd del socket que conecta con el Gekko.
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void* escoltaGekko(void * data){
+    int sortir = 0;
+    Trama trama;
+    char sText[101];
+    
+    while (!sortir) {
+        read((int) data, &trama, sizeof(trama));
+        switch (trama.Tipus) {
+            case 'X':
+                //Show ibex
+                bzero(sText, sizeof(sText));
+                sprintf(sText, "%s\n",trama.Data);
+                write(1, sText, sizeof(sText));
+                break;
+            case 'B':
+                //Buy
+                
+                break;
+            case 'S':
+                //Sell
+                
+                break;
+            case 'M':
+                //Accions comprades per unaltre operador
+                
+                break;
+            case 'D':
+                //Quan s'esborra una venta????
+                
+                break;
+            default:
+                write(1, "Error amb la connexió del servidor\n", strlen("Error amb la connexió del servidor\n"));
+                break;
+        }
+    }
+    return NULL;
+}
+
+/*********************************************************************************************************
+ *
  *   @Nombre: analitzaComanda
  *   @Def: Función que sirve para crear la shell y analizar la operación introducida
  *   @Arg:   In:    sortir -> sirve para indicar al main cuando terminar el programa.
@@ -29,6 +77,13 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko){
     int i = 0, mida = 0;
     Accio a;
     Trama trama;
+    
+    //Crear el thread que escoltara al Gekko
+    pthread_t thread_id;
+    pthread_attr_t attr;
+    
+    pthread_attr_init(&attr);
+    pthread_create(&thread_id, NULL, escoltaGekko, (void *)sockGekko);
     
     //Mostar la shell
     bzero(sText, sizeof(sText));
@@ -88,17 +143,6 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko){
         }
         //Enviar
         write(sockGekko, &trama, sizeof(trama));
-        //Llegir resposta i comprovar si s'ha pogut establir la connexio
-        for(i=0;i<35;i++){
-            read(sockGekko, &trama, sizeof(trama));
-            if (trama.Tipus != 'X') {
-                write(1, "Error amb la connexió del servidor\n", strlen("Error amb la connexió del servidor\n"));
-            }else{
-                bzero(sText, sizeof(sText));
-                sprintf(sText, "%s\n",trama.Data);
-                write(1, sText, sizeof(sText));
-            }
-        }
     }else{
         sComandes = (char *) strtok(sComanda, " ");
         if (!strcmp(sComandes, "buy")) {
