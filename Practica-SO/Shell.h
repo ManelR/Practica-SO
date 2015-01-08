@@ -14,5 +14,9 @@
 
 void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko);
 void showIbex(Trama trama);
+void buy(Trama trama);
+void sell(Trama trama);
+void esborra(Trama trama);
+void vengut(Trama trama);
 
 #endif

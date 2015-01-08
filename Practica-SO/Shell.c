@@ -34,19 +34,19 @@ void* escoltaGekko(void * data){
                 break;
             case 'B':
                 //Buy
-                
+                buy(trama);
                 break;
             case 'S':
                 //Sell
-                
+                sell(trama);
                 break;
             case 'M':
                 //Accions comprades per unaltre operador
-                
+                vengut(trama);
                 break;
             case 'D':
                 //Quan s'esborra una venta????
-                
+                esborra(trama);
                 break;
             default:
                 write(1, "Error amb la connexió del servidor\n", strlen("Error amb la connexió del servidor\n"));
@@ -73,6 +73,21 @@ void showIbex(Trama trama){
     write(1, sText, sizeof(sText));
 }
 
+void buy(Trama trama){
+    
+}
+
+void sell(Trama trama){
+    
+}
+
+void esborra(Trama trama){
+    
+}
+
+void vengut(Trama trama){
+    
+}
 /*********************************************************************************************************
  *
  *   @Nombre: analitzaComanda
@@ -86,10 +101,10 @@ void showIbex(Trama trama){
 
 void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko){
     char sText[100];
-    char *sComanda, *sComandes, *sNombreAccions, *sTicker;
+    char *sComanda, *sAccio, *sNombreAccions, *sTicker;
     char cAux;
     int num = 0;
-    int i = 0, mida = 0;
+    int i = 0, j = 0, mida = 0;
     Accio a;
     Trama trama;
     
@@ -159,69 +174,59 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko){
         //Enviar
         write(sockGekko, &trama, sizeof(trama));
     }else{
-        sComandes = (char *) strtok(sComanda, " ");
-        if (!strcmp(sComandes, "buy")) {
-            sComandes = (char*) strtok(NULL," ");
-            if (NULL != sComandes) {
-                strcpy(sTicker, sComandes);
-                sComandes = (char*) strtok(NULL," ");
-                if (NULL != sComandes) {
-                    strcpy(sNombreAccions, sComandes);
-                    sComandes = (char*) strtok(NULL," ");
-                    if (NULL != sComandes) {
-                        write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
-                    }else{
-                        //Si hi ha tres paraules
-                        //TODO comprovar-les i enviar
-                    }
-                }else{
-                    write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
-                }
-            }else  {
-                write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
-            }
-        }else if (!strcmp(sComandes, "sell")){
-            sComandes = (char*) strtok(NULL," ");
-            if (NULL != sComandes) {
-                strcpy(sTicker, sComandes);
-                sComandes = (char*) strtok(NULL," ");
-                if (NULL != sComandes) {
-                    strcpy(sNombreAccions, sComandes);
-                    sComandes = (char*) strtok(NULL," ");
-                    if (NULL != sComandes) {
-                        write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
-                    }else{
-                        //Si hi ha tres paraules
-                        //TODO comprovar-les i enviar
-                    }
-                }else{
-                    write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
-                }
-            }else  {
-                write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
-            }
-        }else if (!strcmp(sComandes, "erase")) {
-            sComandes = (char*) strtok(NULL," ");
-            if (NULL != sComandes) {
-                strcpy(sTicker, sComandes);
-                sComandes = (char*) strtok(NULL," ");
-                if (NULL != sComandes) {
-                    strcpy(sNombreAccions, sComandes);
-                    sComandes = (char*) strtok(NULL," ");
-                    if (NULL != sComandes) {
-                        write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
-                    }else{
-                        //Si hi ha tres paraules
-                        //TODO comprovar-les i enviar
-                    }
-                }else{
-                    write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
-                }
-            }else  {
-                write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
-            }
-        }else{
+        i = 0;
+        j = 0;
+        sAccio = (char*)malloc(sizeof(char));
+        while (sComanda[i] != ' ' && sComanda[i] != '\0') {
+            sAccio[j] = sComanda[i];
+            i++;
+            j++;
+            sAccio = (char*)realloc(sAccio, sizeof(char) * (j+1));
+        }
+        sAccio[j] = '\0';
+        
+        if(sComanda[i] == '\0'){
             write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+        }else{
+            i++;
+            j = 0;
+            sTicker = (char*)malloc(sizeof(char));
+            while (sComanda[i] != ' ' && sComanda[i] != '\0') {
+                sTicker[j] = sComanda[i];
+                i++;
+                j++;
+                sTicker = (char*)realloc(sTicker, sizeof(char) * (j+1));
+            }
+            sTicker[j] = '\0';
+            
+            if(sComanda[i] == '\0'){
+                write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+            }else{
+                i++;
+                j = 0;
+                sNombreAccions = (char*)malloc(sizeof(char));
+                while (sComanda[i] != ' ' && sComanda[i] != '\0') {
+                    sNombreAccions[j] = sComanda[i];
+                    i++;
+                    j++;
+                    sNombreAccions = (char*)realloc(sNombreAccions, sizeof(char) * (j+1));
+                }
+                sNombreAccions[j] = '\0';
+                
+                if(sComanda[i] == '\0'){
+                    if (!strcmp(sAccio, "buy")) {
+                        
+                    }else if (!strcmp(sAccio, "sell")){
+                        
+                    }else if (!strcmp(sAccio, "erase")) {
+                        
+                    }else{
+                        write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+                    }
+                }else{
+                    write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+                }
+            }
         }
     }
     free(sComanda);
