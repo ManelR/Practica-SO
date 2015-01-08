@@ -268,6 +268,28 @@ void showIbex(int fdDozer){
 
 /*********************************************************************************************************
  *
+ *   @Nombre: sendToDozerBuy
+ *   @Def: Función que sirve para enviar la información de la venta al Dozer.
+ *   @Arg:   In: fdDozer -> fd del Dozer que solicita la información.
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void sendToDozerBuy(int fdDozer, char* sNom, int nNumAccions, float fDiners){
+    Trama trama;
+    char sMissatge[100];
+    
+    strcpy(trama.Origen, "Gekko");
+    trama.Tipus = 'M';
+    bzero(sMissatge, sizeof(sMissatge));
+    sprintf(sMissatge, "%s-%d-%f", sNom, nNumAccions, fDiners);
+    strcpy(trama.Data, sMissatge);
+    write(fdDozer, &trama, sizeof(trama));
+}
+
+/*********************************************************************************************************
+ *
  *   @Nombre: buy
  *   @Def: Función que sirve para gestionar las ventas del dozer.
  *   @Arg:   In: fdDozer -> fd del Dozer que solicita la información.
@@ -324,14 +346,41 @@ void buy(int fdDozer, Trama trama){
     if (j == -1) {
         strcpy(tramaEnviar.Data, "Error. L'acció no està dins IBEX35");
     }else{
-        //Comprovar disponiblitat de les Accions
+        //Comprovar disponiblitat de les Accions a les llistes dels Dozers
         LlistaPDIVenta_vesInici(&ventes[j].llista);
         while (!LlistaPDIVenta_fi(ventes[j].llista) && sortirAccions == 0) {
             //S'ha trobat accions per comprar
             auxVenta = LlistaPDIVenta_consulta(ventes[j].llista);
             if (auxVenta.nNumAccions == nNumAccions) {
                 //Hi ha les accions necessaries
-            
+                LlistaPDIVenta_esborra(&ventes[j].llista);
+                //Enviar al Dozer que té les accions en venta
+                sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, nNumAccions, ibex[j].fPreu * nNumAccions);
+                sortirAccions = 1;
+            }else if (auxVenta.nNumAccions > nNumAccions){
+                //Es pot comprar pero cal modificar la llista
+                auxVenta.nNumAccions = auxVenta.nNumAccions - nNumAccions;
+                LlistaPDIVenta_esborra(&ventes[j].llista);
+                LlistaPDIVenta_insereix(&ventes[j].llista, auxVenta);
+                //Enviar al Dozer que té les accions en venta
+                sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, nNumAccions, ibex[j].fPreu * nNumAccions);
+                sortirAccions = 1;
+            }else if (auxVenta.nNumAccions < nNumAccions){
+                //Es pot comprar d'aqui pero cal avançar
+                LlistaPDIVenta_esborra(&ventes[j].llista);
+                //Enviar al Dozer que té les accions en venta
+                sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, nNumAccions, ibex[j].fPreu * nNumAccions);
+                //Decrementar el numero d'accions que encara s'han de comprar
+                nNumAccions = nNumAccions - auxVenta.nNumAccions;
+                LlistaPDIVenta_avanca(&ventes[j].llista);
+            }
+        }
+        //Si falten agafar del Gekko
+        if (sortirAccions == 0) {
+            if (ibex[j].llAccions >= nNumAccions) {
+                ibex[j].llAccions = ibex[j].llAccions - nNumAccions;
+            }else{
+                nError = 1;
             }
         }
         //Comprovar diners totals
@@ -340,7 +389,7 @@ void buy(int fdDozer, Trama trama){
                 strcpy(tramaEnviar.Data, "Error. Capital insuficient");
             }else{
                 bzero(sText, sizeof(sText));
-                sprintf(sText, "OK-%f", ibex[j].fPreu * nNumAccions);
+                sprintf(sText, "OK-%s-%f", ibex[j].cTicker, ibex[j].fPreu * nNumAccions);
                 strcpy(tramaEnviar.Data, sText);
             }
         }else{
