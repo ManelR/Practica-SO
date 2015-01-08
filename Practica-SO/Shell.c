@@ -9,7 +9,6 @@
 #include "Shell.h"
 #define SORIGEN 14
 #define SDADES 100
-
 /*********************************************************************************************************
  *
  *   @Nombre: analitzaComanda
@@ -140,7 +139,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                             while (sNombreAccions[i] >= '0' && sNombreAccions[i] <= '9') {
                                 i++;
                             }
-                            if (sNombreAccions[i] == '\0') {
+                            if (sNombreAccions[i] == '\0' && strlen(sNombreAccions) < 47) {
                                 strcpy(trama.Origen, stOperador->cNom);
                                 for (i = strlen(trama.Origen); i < SORIGEN; i++) {
                                     trama.Origen[i] = '\0';
@@ -152,17 +151,23 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                                 sText[strlen(sText)] = '-';
                                 //Diners totals to string
                                 sprintf(sAux,"%.2f",stOperador->fDinersTotals);
-                                strcat(sText, sAux);
-                                strcpy(trama.Data, sText);
-                                for (strlen(trama.Data); i < SDADES; i++) {
-                                    trama.Data[i] = '\0';
+                                if (strlen(sAux) < 47) {
+                                    strcat(sText, sAux);
+                                    strcpy(trama.Data, sText);
+                                    for (strlen(trama.Data); i < SDADES; i++) {
+                                        trama.Data[i] = '\0';
+                                    }
+                                    //Enviar
+                                    write(sockGekko, &trama, sizeof(trama));
+                                    //Lock del thread
+                                    s = pthread_mutex_lock(mutex);
+                                }else{
+                                    write(1, "\nComanda incorrecta, tens masses diners per enviar la trama al Gekko.\n\n", sizeof("\nComanda incorrecta, tens masses diners per enviar la trama al Gekko.\n\n"));
                                 }
-                                //Enviar
-                                write(sockGekko, &trama, sizeof(trama));
-                                //Lock del thread
-                                s = pthread_mutex_lock(mutex);
-                            }else{
+                            }else if(sNombreAccions[i] != '\0'){
                                 write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
+                            }else{
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n"));
                             }
                         }else{
                             write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
@@ -176,7 +181,8 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                             while (sNombreAccions[i] >= '0' && sNombreAccions[i] <= '9') {
                                 i++;
                             }
-                            if (sNombreAccions[i] == '\0') {
+                            //comprovar que el nombre d'accions sigui suficientment petit per poder enviar-lo per la trama
+                            if (sNombreAccions[i] == '\0' && strlen(sNombreAccions) < 94) {
                                 //comprovar si tinc el tiker de laccio
                                 LlistaPDIAccio_vesInici(&stOperador->llistaAccions);
                                 while (!LlistaPDIAccio_fi(stOperador->llistaAccions)) {
@@ -202,8 +208,10 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                                     LlistaPDIAccio_avanca(&stOperador->llistaAccions);
                                 }
                                 write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
-                            }else{
+                            }else if(sNombreAccions[i] != '\0'){
                                 write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
+                            }else{
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n"));
                             }
                         }else{
                             write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
