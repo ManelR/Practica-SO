@@ -21,12 +21,12 @@
  *
  *********************************************************************************************************/
 
-void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko){
+void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pthread_mutex_t * mutex){
     char sText[100];
     char *sComanda, *sAccio, *sNombreAccions, *sTicker;
     char cAux;
     int num = 0;
-    int i = 0, j = 0, mida = 0;
+    int i = 0, j = 0, mida = 0, s= 0;
     Accio a;
     Trama trama;
     
@@ -88,6 +88,8 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko){
         }
         //Enviar
         write(sockGekko, &trama, sizeof(trama));
+        //Lock del thread
+        s = pthread_mutex_lock(mutex);
     }else{
         i = 0;
         j = 0;

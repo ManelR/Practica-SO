@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "Tipus_dozer.h"
 
-void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko);
+void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pthread_mutex_t * mutex);
 void showIbex(Trama trama);
 void buy(Trama trama);
 void sell(Trama trama);

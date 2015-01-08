@@ -18,7 +18,7 @@ Operador stOperador;
 IpInfo stIP;
 int sockGekko;
 struct sockaddr_in servGekko;
-pthread_mutex_t mutex;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int connexio();
 void desconnexio();
@@ -217,16 +217,22 @@ void vengut(Trama trama){
 
 void* escoltaGekko(void * data){
     int sortir = 0;
+    int s = 0;
     Trama trama;
-    char sText[101];
+    int nContador = 0;
     
     while (!sortir) {
         read((int) data, &trama, sizeof(trama));
-        //lock
+        
         switch (trama.Tipus) {
             case 'X':
                 //Show ibex
                 showIbex(trama);
+                nContador++;
+                if (nContador == 35) {
+                    s = pthread_mutex_unlock(&mutex);
+                    nContador = 0;
+                }
                 break;
             case 'B':
                 //Buy
@@ -288,7 +294,7 @@ int main() {
     pthread_create(&thread_id, NULL, escoltaGekko, (void *)sockGekko);
     
     while(sortir == 0){
-        Shell_analitzaComanda(&sortir, &stOperador, sockGekko);
+        Shell_analitzaComanda(&sortir, &stOperador, sockGekko, $mutex);
     }
     desconnexio();
     pthread_mutex_destroy(&mutex);
