@@ -251,6 +251,12 @@ void showIbex(int fdDozer){
     //Preparar les dades i enviar
     for (i = 0; i < 35; i++) {
         auxNumAccions = ibex[i].llAccions;
+        //Accions de les llistes
+        LlistaPDIVenta_vesInici(&ventes[i].llista);
+        while (!LlistaPDIVenta_fi(ventes[i].llista)) {
+            auxNumAccions += LlistaPDIVenta_consulta(ventes[i].llista).nNumAccions;
+            LlistaPDIVenta_avanca(&ventes[i].llista);
+        }
         bzero(sText, sizeof(sText));
         sprintf(sText, "%s\t%f\t%lld", ibex[i].cTicker, ibex[i].fPreu, auxNumAccions);
         strcpy(trama.Data, sText);
