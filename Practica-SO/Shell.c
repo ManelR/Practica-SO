@@ -13,7 +13,8 @@
 /*********************************************************************************************************
  *
  *   @Nombre: escoltaGekko
- *   @Def: Función que se encarga de escuchar el socket del Gekko y decide que hacer en función de la trama                         que recibe.
+ *   @Def: Función que se encarga de escuchar el socket del Gekko y decide que hacer en función de la 
+ *         trama que recibe.
  *   @Arg:   In: int sockGekko -> fd del socket que conecta con el Gekko.
  *           Out: -
  *   @Ret: -
@@ -73,17 +74,57 @@ void showIbex(Trama trama){
     write(1, sText, sizeof(sText));
 }
 
+/*********************************************************************************************************
+ *
+ *   @Nombre: buy
+ *   @Def: Función que muestra los datos de compra de las acciones
+ *   @Arg:   In:  Trama que recibe del Gekko de tipo 'B' y ha de mostrar los datos
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
 void buy(Trama trama){
     
 }
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: showIbex
+ *   @Def: Función que muestra los datos de las acciones puestas a la venta
+ *   @Arg:   In:  Trama que recibe del Gekko de tipo 'S' y ha de mostrar los datos
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
 
 void sell(Trama trama){
     
 }
 
+/*********************************************************************************************************
+ *
+ *   @Nombre: showIbex
+ *   @Def: Función que muestra si se han podido cancelar acciones puestas a la venta anteriormente
+ *   @Arg:   In:  Trama que recibe del Gekko de tipo 'D' y ha de mostrar los datos
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
 void esborra(Trama trama){
     
 }
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: showIbex
+ *   @Def: Función que muestra por cuanto se han vendido las acciones que ya estaban a la venta
+ *   @Arg:   In:  Trama que recibe del Gekko de tipo 'M' y ha de mostrar los datos
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
 
 void vengut(Trama trama){
     
