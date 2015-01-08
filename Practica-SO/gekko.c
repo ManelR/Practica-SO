@@ -279,11 +279,13 @@ void showIbex(int fdDozer){
 void buy(int fdDozer, Trama trama){
     char sText[100];
     char sNom[10];
+    int sortirAccions = 0;
     int nNumAccions = 0;
     int nError = 0;
     float fDiners = 0.0;
     int i = 0, j = 0;
     Trama tramaEnviar;
+    Venta auxVenta;
     
     strcpy(tramaEnviar.Origen, "Gekko");
     tramaEnviar.Tipus = 'B';
@@ -323,7 +325,15 @@ void buy(int fdDozer, Trama trama){
         strcpy(tramaEnviar.Data, "Error. L'acció no està dins IBEX35");
     }else{
         //Comprovar disponiblitat de les Accions
-        
+        LlistaPDIVenta_vesInici(&ventes[j].llista);
+        while (!LlistaPDIVenta_fi(ventes[j].llista) && sortirAccions == 0) {
+            //S'ha trobat accions per comprar
+            auxVenta = LlistaPDIVenta_consulta(ventes[j].llista);
+            if (auxVenta.nNumAccions == nNumAccions) {
+                //Hi ha les accions necessaries
+            
+            }
+        }
         //Comprovar diners totals
         if( nError == 0){
             if (ibex[j].fPreu * nNumAccions > fDiners) {
@@ -388,6 +398,7 @@ void* dozer(void * data){
                     showIbex((int)data);
                     break;
                 case 'B':
+                    //BUY
                     buy((int)data, trama);
                     break;
                 default:
