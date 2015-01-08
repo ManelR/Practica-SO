@@ -18,6 +18,7 @@ Operador stOperador;
 IpInfo stIP;
 int sockGekko;
 struct sockaddr_in servGekko;
+pthread_mutex_t mutex;
 
 int connexio();
 void desconnexio();
@@ -35,6 +36,7 @@ void desconnexio();
 void kctrlc(){
     LlistaPDIAccio_destrueix(&stOperador.llistaAccions);
     desconnexio();
+    pthread_mutex_destroy(&mutex);
     exit(0);
 }
 
@@ -129,8 +131,133 @@ void desconnexio(){
     close(sockGekko);
 }
 
+/*********************************************************************************************************
+ *
+ *   @Nombre: showIbex
+ *   @Def: Función que muestra los datos del Ibex recibidos por el Gekko
+ *   @Arg:   In:  Trama que recibe del Gekko de tipo 'X' y ha de mostrar los datos
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void showIbex(Trama trama){
+    char sText[101];
+    bzero(sText, sizeof(sText));
+    sprintf(sText, "%s\n",trama.Data);
+    write(1, sText, sizeof(sText));
+}
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: buy
+ *   @Def: Función que muestra los datos de compra de las acciones
+ *   @Arg:   In:  Trama que recibe del Gekko de tipo 'B' y ha de mostrar los datos
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void buy(Trama trama){
+    
+}
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: showIbex
+ *   @Def: Función que muestra los datos de las acciones puestas a la venta
+ *   @Arg:   In:  Trama que recibe del Gekko de tipo 'S' y ha de mostrar los datos
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void sell(Trama trama){
+    
+}
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: showIbex
+ *   @Def: Función que muestra si se han podido cancelar acciones puestas a la venta anteriormente
+ *   @Arg:   In:  Trama que recibe del Gekko de tipo 'D' y ha de mostrar los datos
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void esborra(Trama trama){
+    
+}
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: showIbex
+ *   @Def: Función que muestra por cuanto se han vendido las acciones que ya estaban a la venta
+ *   @Arg:   In:  Trama que recibe del Gekko de tipo 'M' y ha de mostrar los datos
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void vengut(Trama trama){
+    
+}
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: escoltaGekko
+ *   @Def: Función que se encarga de escuchar el socket del Gekko y decide que hacer en función de la
+ *         trama que recibe.
+ *   @Arg:   In: int sockGekko -> fd del socket que conecta con el Gekko.
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void* escoltaGekko(void * data){
+    int sortir = 0;
+    Trama trama;
+    char sText[101];
+    
+    while (!sortir) {
+        read((int) data, &trama, sizeof(trama));
+        //lock
+        switch (trama.Tipus) {
+            case 'X':
+                //Show ibex
+                showIbex(trama);
+                break;
+            case 'B':
+                //Buy
+                buy(trama);
+                break;
+            case 'S':
+                //Sell
+                sell(trama);
+                break;
+            case 'M':
+                //Accions comprades per unaltre operador
+                vengut(trama);
+                break;
+            case 'D':
+                //Quan s'esborra una venta????
+                esborra(trama);
+                break;
+            default:
+                write(1, "Error amb la connexió del servidor\n", strlen("Error amb la connexió del servidor\n"));
+                break;
+        }
+        //unlock
+    }
+    return NULL;
+}
+
 int main() {
     int file_stock, file_config, sortir = 0;
+    //Inicialitzem el semafor pel thread que escoltara les trames del Gekko
+    pthread_mutex_init(&mutex, NULL);
+    
     
     stOperador.llistaAccions = LlistaPDIAccio_crea();
     signal(SIGINT, ksighandler);
@@ -152,10 +279,19 @@ int main() {
     if(connexio() < 0){
         exit(-1);
     }
+    
+    //Crear el thread que escoltara al Gekko
+    pthread_t thread_id;
+    pthread_attr_t attr;
+    
+    pthread_attr_init(&attr);
+    pthread_create(&thread_id, NULL, escoltaGekko, (void *)sockGekko);
+    
     while(sortir == 0){
         Shell_analitzaComanda(&sortir, &stOperador, sockGekko);
     }
     desconnexio();
+    pthread_mutex_destroy(&mutex);
     
 	return 0;
 }
