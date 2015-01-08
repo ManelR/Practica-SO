@@ -237,18 +237,21 @@ void* escoltaGekko(void * data){
             case 'B':
                 //Buy
                 buy(trama);
+                s = pthread_mutex_unlock(&mutex);
                 break;
             case 'S':
                 //Sell
                 sell(trama);
+                s = pthread_mutex_unlock(&mutex);
                 break;
             case 'M':
                 //Accions comprades per unaltre operador
                 vengut(trama);
                 break;
             case 'D':
-                //Quan s'esborra una venta????
+                //Quan s'esborra una venta
                 esborra(trama);
+                s = pthread_mutex_unlock(&mutex);
                 break;
             default:
                 write(1, "Error amb la connexió del servidor\n", strlen("Error amb la connexió del servidor\n"));
@@ -294,7 +297,7 @@ int main() {
     pthread_create(&thread_id, NULL, escoltaGekko, (void *)sockGekko);
     
     while(sortir == 0){
-        Shell_analitzaComanda(&sortir, &stOperador, sockGekko, $mutex);
+        Shell_analitzaComanda(&sortir, &stOperador, sockGekko, &mutex);
     }
     desconnexio();
     pthread_mutex_destroy(&mutex);

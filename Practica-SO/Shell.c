@@ -22,7 +22,7 @@
  *********************************************************************************************************/
 
 void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pthread_mutex_t * mutex){
-    char sText[100];
+    char sText[100], sAux[100];
     char *sComanda, *sAccio, *sNombreAccions, *sTicker;
     char cAux;
     int num = 0;
@@ -132,11 +132,88 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                 
                 if(sComanda[i] == '\0'){
                     if (!strcmp(sAccio, "buy")) {
-                        
+                        //buy
+                        //Comprovar que tingui 5 o menys lletres el ticker
+                        if (strlen(sTicker) < 6) {
+                            //Comprovar si han entrat nombre enter d'accions
+                            i = 0;
+                            while (sNombreAccions[i] >= '0' && sNombreAccions[i] <= '9') {
+                                i++;
+                            }
+                            if (sNombreAccions[i] == '\0') {
+                                strcpy(trama.Origen, stOperador->cNom);
+                                for (i = strlen(trama.Origen); i < SORIGEN; i++) {
+                                    trama.Origen[i] = '\0';
+                                }
+                                trama.Tipus = 'B';
+                                strcpy(sText, sTicker);
+                                sText[strlen(sText)] = '-';
+                                strcat(sText, sNombreAccions);
+                                sText[strlen(sText)] = '-';
+                                //Diners totals to string
+                                sprintf(sAux,"%.2f",stOperador->fDinersTotals);
+                                strcat(sText, sAux);
+                                strcpy(trama.Data, sText);
+                                for (strlen(trama.Data); i < SDADES; i++) {
+                                    trama.Data[i] = '\0';
+                                }
+                                //Enviar
+                                write(sockGekko, &trama, sizeof(trama));
+                                //Lock del thread
+                                s = pthread_mutex_lock(mutex);
+                            }else{
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
+                            }
+                        }else{
+                            write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
+                        }
                     }else if (!strcmp(sAccio, "sell")){
-                        
+                        //sell
+                        //Comprovar que tingui 5 o menys lletres el ticker
+                        if (strlen(sTicker) < 6) {
+                            //Comprovar si han entrat nombre enter d'accions
+                            i = 0;
+                            while (sNombreAccions[i] >= '0' && sNombreAccions[i] <= '9') {
+                                i++;
+                            }
+                            if (sNombreAccions[i] == '\0') {
+                                //comprovar si tinc el tiker de laccio
+                                LlistaPDIAccio_vesInici(&stOperador->llistaAccions);
+                                while (!LlistaPDIAccio_fi(stOperador->llistaAccions)) {
+                                    if(strcmp(LlistaPDIAccio_consulta(stOperador->llistaAccions).cTicker,sTicker)){
+                                        //Enviar trama
+                                        strcpy(trama.Origen, stOperador->cNom);
+                                        for (i = strlen(trama.Origen); i < SORIGEN; i++) {
+                                            trama.Origen[i] = '\0';
+                                        }
+                                        trama.Tipus = 'S';
+                                        strcpy(sText, sTicker);
+                                        sText[strlen(sText)] = '-';
+                                        strcat(sText, sNombreAccions);
+                                        strcpy(trama.Data, sText);
+                                        for (i=strlen(sText); i < SDADES; i++) {
+                                            trama.Data[i] = '\0';
+                                        }
+                                        write(sockGekko, &trama, sizeof(trama));
+                                        //Lock del thread
+                                        s = pthread_mutex_lock(mutex);
+                                        break;
+                                    }
+                                    LlistaPDIAccio_avanca(&stOperador->llistaAccions);
+                                }
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
+                            }else{
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
+                            }
+                        }else{
+                            write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
+                        }
                     }else if (!strcmp(sAccio, "erase")) {
+                        //erase
+                        //comprovar si hi ha numero enter
                         
+                        //Lock del thread
+                        s = pthread_mutex_lock(mutex);
                     }else{
                         write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
                     }
@@ -147,4 +224,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
         }
     }
     free(sComanda);
+    free(sNombreAccions);
+    free(sAccio);
+    free(sTicker);
 }
