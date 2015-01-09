@@ -201,7 +201,6 @@ void buy(Trama trama){
             LlistaPDIAccio_avanca(&stOperador.llistaAccions);
         }
         strcpy(a.cTicker,sAux);
-        LlistaPDIAccio_esborra(&stOperador.llistaAccions);
         j = 0;
         while (trama.Data[i] != '-') {
             sAux[j] = trama.Data[i];
@@ -213,16 +212,15 @@ void buy(Trama trama){
         if(!trobat){
             //afegir a la llista
             a.nAccions = atoi(sAux);
-            LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
-            sprintf(sText, "Compra realitzada. Cost: %.2f\n", preu);
-            write(1, sText, sizeof(sText));
         }else{
             //actualitzar nombre accions
+            LlistaPDIAccio_esborra(&stOperador.llistaAccions);
             a.nAccions = a.nAccions + atoi(sAux);
-            LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
-            sprintf(sText, "Compra realitzada. Cost: %.2f\n", preu);
-            write(1, sText, sizeof(sText));
         }
+        LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
+        bzero(sText, sizeof(sText));
+        sprintf(sText, "Compra realitzada. Cost: %.2f\n", preu);
+        write(1, sText, sizeof(sText));
         free(sAux);
     }
 }
