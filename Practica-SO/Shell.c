@@ -24,7 +24,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
     char sText[100], sAux[100];
     char *sComanda, *sAccio, *sNombreAccions, *sTicker;
     char cAux;
-    int num = 0;
+    int num = 0, trobat = 0;
     int i = 0, j = 0, mida = 0, s= 0;
     Accio a;
     Trama trama;
@@ -189,7 +189,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                             if (sNombreAccions[i] == '\0' && strlen(sNombreAccions) < 94) {
                                 //comprovar si tinc el tiker de laccio
                                 LlistaPDIAccio_vesInici(&stOperador->llistaAccions);
-                                while (!LlistaPDIAccio_fi(stOperador->llistaAccions)) {
+                                while (!LlistaPDIAccio_fi(stOperador->llistaAccions) && !trobat) {
                                     a = LlistaPDIAccio_consulta(stOperador->llistaAccions);
                                     if(!strcasecmp(a.cTicker,sTicker)){
                                         //Enviar trama
@@ -207,14 +207,15 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                                         for (i = strlen(sText); i < SDADES; i++) {
                                             trama.Data[i] = '\0';
                                         }
+                                        printf("%s\n",trama.Data);
                                         write(sockGekko, &trama, sizeof(trama));
                                         //Lock del thread
                                         s = pthread_mutex_lock(mutex);
-                                        break;
+                                        trobat = 1;
                                     }
                                     LlistaPDIAccio_avanca(&stOperador->llistaAccions);
                                 }
-                                write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
+                                if(!trobat) write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
                             }else if(sNombreAccions[i] != '\0'){
                                 write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
                             }else{
