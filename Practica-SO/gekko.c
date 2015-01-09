@@ -389,7 +389,7 @@ void buy(int fdDozer, Trama trama){
                 strcpy(tramaEnviar.Data, "Error. Capital insuficient");
             }else{
                 bzero(sText, sizeof(sText));
-                sprintf(sText, "OK-%s-%f", ibex[j].cTicker, ibex[j].fPreu * nNumAccions);
+                sprintf(sText, "%f-%s-%d", ibex[j].fPreu * nNumAccions, ibex[j].cTicker, nNumAccions);
                 strcpy(tramaEnviar.Data, sText);
             }
         }else{
