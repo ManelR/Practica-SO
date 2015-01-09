@@ -229,11 +229,11 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                 }else{
                     write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
                 }
+                free(sNombreAccions);
             }
+            free(sAccio);
+            free(sTicker);
         }
     }
     free(sComanda);
-    free(sNombreAccions);
-    free(sAccio);
-    free(sTicker);
 }

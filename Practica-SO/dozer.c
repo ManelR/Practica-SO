@@ -159,12 +159,16 @@ void showIbex(Trama trama){
  *********************************************************************************************************/
 
 void buy(Trama trama){
-    
+    if (trama.Data[0] == 'E') {
+        write(1,trama.Data,sizeof(trama.Data));
+    }else{
+        
+    }
 }
 
 /*********************************************************************************************************
  *
- *   @Nombre: showIbex
+ *   @Nombre: sell
  *   @Def: Función que muestra los datos de las acciones puestas a la venta
  *   @Arg:   In:  Trama que recibe del Gekko de tipo 'S' y ha de mostrar los datos
  *           Out: -
@@ -178,7 +182,7 @@ void sell(Trama trama){
 
 /*********************************************************************************************************
  *
- *   @Nombre: showIbex
+ *   @Nombre: esborra
  *   @Def: Función que muestra si se han podido cancelar acciones puestas a la venta anteriormente
  *   @Arg:   In:  Trama que recibe del Gekko de tipo 'D' y ha de mostrar los datos
  *           Out: -
@@ -192,7 +196,7 @@ void esborra(Trama trama){
 
 /*********************************************************************************************************
  *
- *   @Nombre: showIbex
+ *   @Nombre: vengut
  *   @Def: Función que muestra por cuanto se han vendido las acciones que ya estaban a la venta
  *   @Arg:   In:  Trama que recibe del Gekko de tipo 'M' y ha de mostrar los datos
  *           Out: -
