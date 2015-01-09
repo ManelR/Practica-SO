@@ -146,15 +146,19 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                                 }
                                 trama.Tipus = 'B';
                                 strcpy(sText, sTicker);
-                                sText[strlen(sText)] = '-';
+                                i = strlen(sText);
+                                sText[i] = '-';
+                                sText[i+1] = '\0';
                                 strcat(sText, sNombreAccions);
-                                sText[strlen(sText)] = '-';
+                                i = strlen(sText);
+                                sText[i] = '-';
+                                sText[i+1] = '\0';
                                 //Diners totals to string
                                 sprintf(sAux,"%.2f",stOperador->fDinersTotals);
                                 if (strlen(sAux) < 47) {
                                     strcat(sText, sAux);
                                     strcpy(trama.Data, sText);
-                                    for (strlen(trama.Data); i < SDADES; i++) {
+                                    for (i = strlen(trama.Data); i < SDADES; i++) {
                                         trama.Data[i] = '\0';
                                     }
                                     //Enviar
@@ -195,10 +199,12 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                                         }
                                         trama.Tipus = 'S';
                                         strcpy(sText, sTicker);
-                                        sText[strlen(sText)] = '-';
+                                        i = strlen(sText);
+                                        sText[i] = '-';
+                                        sText[i+1] = '\0';
                                         strcat(sText, sNombreAccions);
                                         strcpy(trama.Data, sText);
-                                        for (i=strlen(sText); i < SDADES; i++) {
+                                        for (i = strlen(sText); i < SDADES; i++) {
                                             trama.Data[i] = '\0';
                                         }
                                         write(sockGekko, &trama, sizeof(trama));

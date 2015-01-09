@@ -320,6 +320,7 @@ void buy(int fdDozer, Trama trama){
     sText[i] = '\0';
     strcpy(sNom, sText);
     j = 0;
+    i++;
     while (trama.Data[i] != '-') {
         sText[j] = trama.Data[i];
         i++;
@@ -328,6 +329,7 @@ void buy(int fdDozer, Trama trama){
     sText[j] = '\0';
     nNumAccions = atoi(sText);
     j = 0;
+    i++;
     while (trama.Data[i] != '\0') {
         sText[j] = trama.Data[i];
         i++;
@@ -339,7 +341,7 @@ void buy(int fdDozer, Trama trama){
     //Comprovar si les accions existeixen
     j = -1;
     for (i = 0; i < 35; i++) {
-        if(strcmp(ibex[i].cTicker, sNom) == 0){
+        if(strcasecmp(ibex[i].cTicker, sNom) == 0){
             j = i;
         }
     }

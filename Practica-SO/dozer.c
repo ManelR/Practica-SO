@@ -160,12 +160,15 @@ void showIbex(Trama trama){
 
 void buy(Trama trama){
     char *sAux;
+    char sText[100];
     int i = 0, j = 0, trobat = 0;
     float preu;
     Accio a;
     
     if (trama.Data[0] == 'E') {
-        write(1,trama.Data,sizeof(trama.Data));
+        strcpy(sText, trama.Data);
+        strcat(sText, "\n");
+        write(1,sText,sizeof(sText));
     }else{
         //rebem preu-ticker-nombre accions
         sAux = (char*)malloc(sizeof(char));
@@ -211,10 +214,14 @@ void buy(Trama trama){
             //afegir a la llista
             a.nAccions = atoi(sAux);
             LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
+            sprintf(sText, "Compra realitzada. Cost: %.2f\n", preu);
+            write(1, sText, sizeof(sText));
         }else{
             //actualitzar nombre accions
             a.nAccions = a.nAccions + atoi(sAux);
             LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
+            sprintf(sText, "Compra realitzada. Cost: %.2f\n", preu);
+            write(1, sText, sizeof(sText));
         }
         free(sAux);
     }
