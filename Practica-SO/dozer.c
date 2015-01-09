@@ -159,10 +159,64 @@ void showIbex(Trama trama){
  *********************************************************************************************************/
 
 void buy(Trama trama){
+    char *sAux;
+    int i = 0, j = 0, trobat = 0;
+    float preu;
+    Accio a;
+    
     if (trama.Data[0] == 'E') {
         write(1,trama.Data,sizeof(trama.Data));
     }else{
-        
+        //rebem preu-ticker-nombre accions
+        sAux = (char*)malloc(sizeof(char));
+        while (trama.Data[i] != '-') {
+            sAux[i] = trama.Data[i];
+            i++;
+            sAux = (char*)realloc(sAux, sizeof(char) * (i+1));
+        }
+        sAux[i] = '\0';
+        preu = atof(sAux);
+        //actualitzem el preu
+        stOperador.fDinersTotals = stOperador.fDinersTotals - preu;
+        i++;
+        while (trama.Data[i] != '-') {
+            sAux[j] = trama.Data[i];
+            i++;
+            j++;
+            sAux = (char*)realloc(sAux, sizeof(char) * (j+1));
+        }
+        sAux[j] = '\0';
+        i++;
+        //Buscar ticker a la llista i sino afegir-ho
+        LlistaPDIAccio_vesInici(&stOperador.llistaAccions);
+        while (!LlistaPDIAccio_fi(stOperador.llistaAccions)) {
+            a = LlistaPDIAccio_consulta(stOperador.llistaAccions);
+            if(!strcmp(a.cTicker,sAux)){
+                trobat = 1;
+                break;
+            }
+            LlistaPDIAccio_avanca(&stOperador.llistaAccions);
+        }
+        strcpy(a.cTicker,sAux);
+        LlistaPDIAccio_esborra(&stOperador.llistaAccions);
+        j = 0;
+        while (trama.Data[i] != '-') {
+            sAux[j] = trama.Data[i];
+            i++;
+            j++;
+            sAux = (char*)realloc(sAux, sizeof(char) * (j+1));
+        }
+        sAux[j] = '\0';
+        if(!trobat){
+            //afegir a la llista
+            a.nAccions = atoi(sAux);
+            LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
+        }else{
+            //actualitzar nombre accions
+            a.nAccions = a.nAccions + atoi(sAux);
+            LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
+        }
+        free(sAux);
     }
 }
 

@@ -187,7 +187,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                                 LlistaPDIAccio_vesInici(&stOperador->llistaAccions);
                                 while (!LlistaPDIAccio_fi(stOperador->llistaAccions)) {
                                     a = LlistaPDIAccio_consulta(stOperador->llistaAccions);
-                                    if(!strcmp(a.cTicker,sTicker)){
+                                    if(!strcasecmp(a.cTicker,sTicker)){
                                         //Enviar trama
                                         strcpy(trama.Origen, stOperador->cNom);
                                         for (i = strlen(trama.Origen); i < SORIGEN; i++) {
