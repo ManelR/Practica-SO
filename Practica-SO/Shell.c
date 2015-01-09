@@ -186,7 +186,8 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                                 //comprovar si tinc el tiker de laccio
                                 LlistaPDIAccio_vesInici(&stOperador->llistaAccions);
                                 while (!LlistaPDIAccio_fi(stOperador->llistaAccions)) {
-                                    if(!strcmp(LlistaPDIAccio_consulta(stOperador->llistaAccions).cTicker,sTicker)){
+                                    a = LlistaPDIAccio_consulta(stOperador->llistaAccions);
+                                    if(!strcmp(a.cTicker,sTicker)){
                                         //Enviar trama
                                         strcpy(trama.Origen, stOperador->cNom);
                                         for (i = strlen(trama.Origen); i < SORIGEN; i++) {
