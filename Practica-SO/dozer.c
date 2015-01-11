@@ -18,7 +18,7 @@ Operador stOperador;
 IpInfo stIP;
 int sockGekko;
 struct sockaddr_in servGekko;
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+sem_t semafor;
 
 int connexio();
 void desconnexio();
@@ -36,7 +36,7 @@ void desconnexio();
 void kctrlc(){
     LlistaPDIAccio_destrueix(&stOperador.llistaAccions);
     desconnexio();
-    pthread_mutex_destroy(&mutex);
+    sem_destroy(&semafor);
     exit(0);
 }
 
@@ -293,19 +293,19 @@ void* escoltaGekko(void * data){
                 showIbex(trama);
                 nContador++;
                 if (nContador == 35) {
-                    s = pthread_mutex_unlock(&mutex);
+                    sem_post(&semafor);
                     nContador = 0;
                 }
                 break;
             case 'B':
                 //Buy
                 buy(trama);
-                s = pthread_mutex_unlock(&mutex);
+                sem_post(&semafor);
                 break;
             case 'S':
                 //Sell
                 sell(trama);
-                s = pthread_mutex_unlock(&mutex);
+                sem_post(&semafor);
                 break;
             case 'M':
                 //Accions comprades per unaltre operador
@@ -314,7 +314,7 @@ void* escoltaGekko(void * data){
             case 'D':
                 //Quan s'esborra una venta
                 esborra(trama);
-                s = pthread_mutex_unlock(&mutex);
+                sem_post(&semafor);
                 break;
             default:
                 write(1, "Error amb la connexió del servidor\n", strlen("Error amb la connexió del servidor\n"));
@@ -328,7 +328,7 @@ void* escoltaGekko(void * data){
 int main() {
     int file_stock, file_config, sortir = 0;
     //Inicialitzem el semafor pel thread que escoltara les trames del Gekko
-    pthread_mutex_init(&mutex, NULL);
+    sem_init(&semafor, 0, 0);
     
     
     stOperador.llistaAccions = LlistaPDIAccio_crea();
@@ -360,10 +360,10 @@ int main() {
     pthread_create(&thread_id, NULL, escoltaGekko, (void *)sockGekko);
     
     while(sortir == 0){
-        Shell_analitzaComanda(&sortir, &stOperador, sockGekko, &mutex);
+        Shell_analitzaComanda(&sortir, &stOperador, sockGekko, &semafor);
     }
     desconnexio();
-    pthread_mutex_destroy(&mutex);
+    sem_destroy(&semafor);
     
 	return 0;
 }

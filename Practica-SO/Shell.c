@@ -20,7 +20,7 @@
  *
  *********************************************************************************************************/
 
-void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pthread_mutex_t * mutex){
+void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, sem_t * semafor){
     char sText[100], sAux[100];
     char *sComanda, *sAccio, *sNombreAccions, *sTicker;
     char cAux;
@@ -88,7 +88,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
         //Enviar
         write(sockGekko, &trama, sizeof(trama));
         //Lock del thread
-        s = pthread_mutex_lock(mutex);
+        sem_wait(semafor);
     }else{
         i = 0;
         j = 0;
@@ -164,7 +164,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                                     //Enviar
                                     write(sockGekko, &trama, sizeof(trama));
                                     //Lock del thread
-                                    s = pthread_mutex_lock(mutex);
+                                    sem_wait(semafor);
                                 }else{
                                     write(1, "\nComanda incorrecta, tens masses diners per enviar la trama al Gekko.\n\n", sizeof("\nComanda incorrecta, tens masses diners per enviar la trama al Gekko.\n\n"));
                                 }
@@ -198,6 +198,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                                             trama.Origen[i] = '\0';
                                         }
                                         trama.Tipus = 'S';
+                                        bzero(sText, sizeof(sText));
                                         strcpy(sText, sTicker);
                                         i = strlen(sText);
                                         sText[i] = '-';
@@ -210,7 +211,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                                         printf("%s\n",trama.Data);
                                         write(sockGekko, &trama, sizeof(trama));
                                         //Lock del thread
-                                        s = pthread_mutex_lock(mutex);
+                                        sem_wait(semafor);
                                         trobat = 1;
                                     }
                                     LlistaPDIAccio_avanca(&stOperador->llistaAccions);
@@ -229,7 +230,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, pt
                         //comprovar si hi ha numero enter
                         
                         //Lock del thread
-                        s = pthread_mutex_lock(mutex);
+                        sem_wait(semafor);
                     }else{
                         write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
                     }
