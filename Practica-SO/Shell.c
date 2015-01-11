@@ -192,26 +192,30 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
                                 while (!LlistaPDIAccio_fi(stOperador->llistaAccions) && !trobat) {
                                     a = LlistaPDIAccio_consulta(stOperador->llistaAccions);
                                     if(!strcasecmp(a.cTicker,sTicker)){
-                                        //Enviar trama
-                                        strcpy(trama.Origen, stOperador->cNom);
-                                        for (i = strlen(trama.Origen); i < SORIGEN; i++) {
-                                            trama.Origen[i] = '\0';
+                                        if(a.nAccions >= atoi(sNombreAccions)){
+                                            //Enviar trama
+                                            strcpy(trama.Origen, stOperador->cNom);
+                                            for (i = strlen(trama.Origen); i < SORIGEN; i++) {
+                                                trama.Origen[i] = '\0';
+                                            }
+                                            trama.Tipus = 'S';
+                                            bzero(sText, sizeof(sText));
+                                            strcpy(sText, sTicker);
+                                            i = strlen(sText);
+                                            sText[i] = '-';
+                                            sText[i+1] = '\0';
+                                            strcat(sText, sNombreAccions);
+                                            strcpy(trama.Data, sText);
+                                            for (i = strlen(sText); i < SDADES; i++) {
+                                                trama.Data[i] = '\0';
+                                            }
+                                            printf("%s\n",trama.Data);
+                                            write(sockGekko, &trama, sizeof(trama));
+                                            //Lock del thread
+                                            sem_wait(semafor);
+                                        }else{
+                                            write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions igual o menor a les existents.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre d'accions igual o menor a les existents.\n\n"));
                                         }
-                                        trama.Tipus = 'S';
-                                        bzero(sText, sizeof(sText));
-                                        strcpy(sText, sTicker);
-                                        i = strlen(sText);
-                                        sText[i] = '-';
-                                        sText[i+1] = '\0';
-                                        strcat(sText, sNombreAccions);
-                                        strcpy(trama.Data, sText);
-                                        for (i = strlen(sText); i < SDADES; i++) {
-                                            trama.Data[i] = '\0';
-                                        }
-                                        printf("%s\n",trama.Data);
-                                        write(sockGekko, &trama, sizeof(trama));
-                                        //Lock del thread
-                                        sem_wait(semafor);
                                         trobat = 1;
                                     }
                                     LlistaPDIAccio_avanca(&stOperador->llistaAccions);

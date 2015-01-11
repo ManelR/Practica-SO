@@ -280,7 +280,6 @@ void vengut(Trama trama){
 
 void* escoltaGekko(void * data){
     int sortir = 0;
-    int s = 0;
     Trama trama;
     int nContador = 0;
     
