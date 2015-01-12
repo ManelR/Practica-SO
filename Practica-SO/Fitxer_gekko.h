@@ -14,5 +14,5 @@
 
 void Fitxer_carregaFitxerConfig(int file_config, IpInfo* stIP);
 void Fitxer_carregaFitxerIbex(int file_ibex, Accio ibex[35], InfoVentes ventes[35]);
-
+void Fitxer_actualitzaXML(AccioXML ibex[35]);
 #endif

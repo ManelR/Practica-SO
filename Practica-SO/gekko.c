@@ -19,6 +19,7 @@ InfoVentes ventes[35];
 IpInfo stIP;
 int sockTumb, nPeticio = 0;
 struct sockaddr_in servTumb;
+AccioXML ibexXML[35];
 
 
 void actualitzarInformacio();
@@ -200,9 +201,32 @@ void actualitzarInformacio(){
     }else{
         write(1, "Dades actualitzades\n", strlen("Dades actualitzades\n"));
         nPeticio++;
-        if(nPeticio == stIP.nPeticio){
-            //guardaDades();
-            nPeticio = 0;
+        if (nPeticio == 1){
+            //Guardem preus inicials
+            for (i = 0; i < 35; i++) {
+                strcpy(ibexXML[i].cTicker, ibex[i].cTicker);
+                ibexXML[i].fPreuInicial = ibex[i].fPreu;
+                ibexXML[i].fPreuMaxim = ibex[i].fPreu;
+                ibexXML[i].fPreuMinim = ibex[i].fPreu;
+            }
+        }else{
+            //Anar actualitzant preus maxims i minims
+            for (i = 0; i < 35; i++) {
+                if (ibex[i].fPreu > ibexXML[i].fPreuMaxim) {
+                    ibexXML[i].fPreuMaxim = ibex[i].fPreu;
+                }
+                if (ibex[i].fPreu < ibexXML[i].fPreuMaxim) {
+                    ibexXML[i].fPreuMinim = ibex[i].fPreu;
+                }
+            }
+            if(nPeticio == stIP.nPeticio){
+                for (i = 0; i < 35; i++) {
+                    ibexXML[i].fPreuFinal = ibex[i].fPreu;
+                }
+                //Actualitzem el fitxer
+                Fitxer_actualitzaXML(ibexXML);
+                nPeticio = 0;
+            }
         }
     }
 }
@@ -574,7 +598,6 @@ int main() {
     bzero(sText, sizeof(sText));
     sprintf(sText, "\nIP INFO\n %s --- %d -- %d\n\n", stIP.sIP, stIP.nPort, stIP.nSegons);
     write(1, sText, strlen(sText));
-    
     
     //Connexió
     if(connexio() < 0){

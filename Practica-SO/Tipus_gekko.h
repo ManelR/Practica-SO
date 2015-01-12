@@ -46,4 +46,12 @@ typedef struct{
     char Data[100];
 }Trama;
 
+typedef struct{
+    char cTicker[6];
+    float fPreuInicial;
+    float fPreuFinal;
+    float fPreuMaxim;
+    float fPreuMinim;
+}AccioXML;
+
 #endif
