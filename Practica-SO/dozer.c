@@ -370,7 +370,7 @@ void vengut(Trama trama){
         sAux = (char*)realloc(sAux, sizeof(char) * (i+1));
     }
     sAux[i] = '\0';
-    sprintf(sText, "[GEKKO]: Venta realitzada. %s ", sAux);
+    sprintf(sText, "\n\n[GEKKO]: Venta realitzada. %s ", sAux);
     i++;
     j = 0;
     while (trama.Data[i] != '-') {
@@ -392,7 +392,7 @@ void vengut(Trama trama){
     }
     sAux[j] = '\0';
     strcat(sText, sAux);
-    strcat(sText, "€.\n");
+    strcat(sText, "€.\n\n");
     //Actualitzem preu
     preu = atof(sAux);
     stOperador.fDinersTotals = stOperador.fDinersTotals + preu;

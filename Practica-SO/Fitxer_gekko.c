@@ -22,7 +22,7 @@
 void Fitxer_carregaFitxerConfig(int file_config, IpInfo* stIP){
     char cAux;
     char sText[100];
-    int nContador = 0;
+    int nContador = 0, nPeticio;
     
     //Lectura dels segons
     read(file_config, &cAux, 1);
@@ -45,12 +45,19 @@ void Fitxer_carregaFitxerConfig(int file_config, IpInfo* stIP){
     strcpy(stIP->sIP, sText);
     //Lectura del port
     nContador = 0;
-    while (read(file_config, &cAux, 1) != 0) {
+    while (read(file_config, &cAux, 1) != '\n') {
         sText[nContador] = cAux;
         nContador++;
     }
     sText[nContador] = '\0';
     stIP->nPort = atoi(sText);
+    while (read(file_config, &cAux, 1) != '\n') {
+        sText[nContador] = cAux;
+        nContador++;
+    }
+    sText[nContador] = '\0';
+    nPeticio = atoi(sText);
+    printf("\n\n\n%s - %d - %d - %d\n\n", stIP->sIP,stIP->nPort,stIP->nSegons,nPeticio);
     close(file_config);
 }
 
