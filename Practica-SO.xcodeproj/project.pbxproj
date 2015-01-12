@@ -109,6 +109,8 @@
 		3B48D1761A3CBD5B008CD872 /* Dozer */ = {
 			isa = PBXGroup;
 			children = (
+				3B48D17E1A3CBDC1008CD872 /* LlistaPDIAccio.c */,
+				3B48D17F1A3CBDC1008CD872 /* LlistaPDIAccio.h */,
 				3B48D1771A3CBDC1008CD872 /* dozer.c */,
 				3B48D1781A3CBDC1008CD872 /* config.dat */,
 				3B48D1791A3CBDC1008CD872 /* Tipus_dozer.h */,
@@ -116,8 +118,6 @@
 				3B48D17B1A3CBDC1008CD872 /* Fitxer_dozer.c */,
 				3B48D17C1A3CBDC1008CD872 /* Shell.h */,
 				3B48D17D1A3CBDC1008CD872 /* Fitxer_dozer.h */,
-				3B48D17E1A3CBDC1008CD872 /* LlistaPDIAccio.c */,
-				3B48D17F1A3CBDC1008CD872 /* LlistaPDIAccio.h */,
 				3B48D1811A3CBDC1008CD872 /* stock.dat */,
 			);
 			name = Dozer;

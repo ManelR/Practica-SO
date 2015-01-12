@@ -26,6 +26,7 @@ typedef struct{
     int nSegons;
     char sIP[30];
     int nPort;
+    int nPeticio;
 }IpInfo;
 
 typedef struct{

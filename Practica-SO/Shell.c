@@ -25,7 +25,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
     char *sComanda, *sAccio, *sNombreAccions, *sTicker;
     char cAux;
     int num = 0, trobat = 0;
-    int i = 0, j = 0, mida = 0, s= 0;
+    int i = 0, j = 0, mida = 0;
     Accio a;
     Trama trama;
     

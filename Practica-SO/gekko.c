@@ -17,8 +17,9 @@
 Accio ibex[35];
 InfoVentes ventes[35];
 IpInfo stIP;
-int sockTumb;
+int sockTumb, nPeticio = 0;
 struct sockaddr_in servTumb;
+
 
 void actualitzarInformacio();
 int connexio();
@@ -198,6 +199,11 @@ void actualitzarInformacio(){
         }
     }else{
         write(1, "Dades actualitzades\n", strlen("Dades actualitzades\n"));
+        nPeticio++;
+        if(nPeticio == stIP.nPeticio){
+            guardaDades();
+            nPeticio = 0;
+        }
     }
 }
 

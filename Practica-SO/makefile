@@ -7,7 +7,7 @@ Fitxer_dozer.o: Fitxer_dozer.c Fitxer_dozer.h Tipus_dozer.h LlistaPDIAccio.h
 	gcc -Wall -Wextra -c Fitxer_dozer.c
 
 Shell.o: Shell.c Shell.h Tipus_dozer.h
-	gcc -Wall -Wextra -lpthread -c Shell.c
+	gcc -Wall -Wextra -c Shell.c
 
 dozer.o: dozer.c LlistaPDIAccio.h Tipus_dozer.h Fitxer_dozer.h Shell.h
 	gcc -Wall -Wextra -c dozer.c
@@ -19,7 +19,7 @@ LlistaPDIVenta.o: LlistaPDIVenta.c LlistaPDIVenta.h Tipus_gekko.h
 	gcc -Wall -Wextra -c LlistaPDIVenta.c
 
 gekko.o: gekko.c Tipus_gekko.h Fitxer_gekko.h LlistaPDIVenta.h
-	gcc -Wall -Wextra -lpthread -c gekko.c
+	gcc -Wall -Wextra -c gekko.c
 
 Gekko: Fitxer_gekko.o LlistaPDIVenta.o gekko.o
 	gcc Fitxer_gekko.o LlistaPDIVenta.o gekko.o -Wall -Wextra -lpthread -o Gekko
