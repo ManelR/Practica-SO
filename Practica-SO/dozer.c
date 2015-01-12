@@ -190,7 +190,7 @@ void buy(Trama trama){
         }
         sAux[j] = '\0';
         i++;
-        //Buscar ticker a la llista i sino afegir-ho
+        //Buscar ticker a la llista
         LlistaPDIAccio_vesInici(&stOperador.llistaAccions);
         while (!LlistaPDIAccio_fi(stOperador.llistaAccions)) {
             a = LlistaPDIAccio_consulta(stOperador.llistaAccions);
@@ -202,7 +202,7 @@ void buy(Trama trama){
         }
         strcpy(a.cTicker,sAux);
         j = 0;
-        while (trama.Data[i] != '-') {
+        while (trama.Data[i] != '\0') {
             sAux[j] = trama.Data[i];
             i++;
             j++;
@@ -236,7 +236,50 @@ void buy(Trama trama){
  *********************************************************************************************************/
 
 void sell(Trama trama){
+    char sText[100];
+    char *sAux;
+    int i, j, nAccions;
+    Accio a;
     
+    if (trama.Data[0] == 'E') {
+        strcpy(sText, trama.Data);
+        strcat(sText, "\n");
+        write(1,sText,sizeof(sText));
+    }else{
+        //Rebo Nombre accions-ticker
+        sAux = (char*)malloc(sizeof(char));
+        while (trama.Data[i] != '-') {
+            sAux[i] = trama.Data[i];
+            i++;
+            sAux = (char*)realloc(sAux, sizeof(char) * (i+1));
+        }
+        sAux[i] = '\0';
+        i++;
+        nAccions = atoi(sAux);
+        //Llegir ticker
+        j = 0;
+        while (trama.Data[i] != '\0') {
+            sAux[j] = trama.Data[i];
+            i++;
+            j++;
+            sAux = (char*)realloc(sAux, sizeof(char) * (j+1));
+        }
+        sAux[j] = '\0';
+        //Buscar ticker a la llista
+        LlistaPDIAccio_vesInici(&stOperador.llistaAccions);
+        while (!LlistaPDIAccio_fi(stOperador.llistaAccions)) {
+            a = LlistaPDIAccio_consulta(stOperador.llistaAccions);
+            if(!strcasecmp(a.cTicker,sAux)){
+                LlistaPDIAccio_esborra(&stOperador.llistaAccions);
+                a.nAccions = a.nAccions - nAccions;
+                LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
+                break;
+            }
+            LlistaPDIAccio_avanca(&stOperador.llistaAccions);
+        }
+        free(sAux);
+        write(1,"OK. Accions posades a la venda.\n",sizeof("OK. Accions posades a la venda.\n"));
+    }
 }
 
 /*********************************************************************************************************
@@ -250,7 +293,58 @@ void sell(Trama trama){
  *********************************************************************************************************/
 
 void esborra(Trama trama){
+    char sText[100];
+    char *sAux;
+    int i, j, nAccions, trobat;
+    Accio a;
     
+    if (trama.Data[0] == 'E') {
+        strcpy(sText, trama.Data);
+        strcat(sText, "\n");
+        write(1,sText,sizeof(sText));
+    }else{
+        //Rebo Nombre accions-ticker
+        sAux = (char*)malloc(sizeof(char));
+        while (trama.Data[i] != '-') {
+            sAux[i] = trama.Data[i];
+            i++;
+            sAux = (char*)realloc(sAux, sizeof(char) * (i+1));
+        }
+        sAux[i] = '\0';
+        i++;
+        nAccions = atoi(sAux);
+        //Llegir ticker
+        j = 0;
+        while (trama.Data[i] != '\0') {
+            sAux[j] = trama.Data[i];
+            i++;
+            j++;
+            sAux = (char*)realloc(sAux, sizeof(char) * (j+1));
+        }
+        sAux[j] = '\0';
+        //Buscar ticker a la llista
+        LlistaPDIAccio_vesInici(&stOperador.llistaAccions);
+        while (!LlistaPDIAccio_fi(stOperador.llistaAccions)) {
+            a = LlistaPDIAccio_consulta(stOperador.llistaAccions);
+            if(!strcmp(a.cTicker,sAux)){
+                trobat = 1;
+                break;
+            }
+            LlistaPDIAccio_avanca(&stOperador.llistaAccions);
+        }
+        strcpy(a.cTicker,sAux);
+        if(!trobat){
+            //afegir a la llista
+            a.nAccions = nAccions;
+        }else{
+            //actualitzar nombre accions
+            LlistaPDIAccio_esborra(&stOperador.llistaAccions);
+            a.nAccions = a.nAccions + nAccions;
+        }
+        LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
+        free(sAux);
+        write(1,"Venda anul·lada.\n",sizeof("Venda anul·lada.\n"));
+    }
 }
 
 /*********************************************************************************************************
@@ -264,7 +358,46 @@ void esborra(Trama trama){
  *********************************************************************************************************/
 
 void vengut(Trama trama){
+    char *sAux, sText[100];
+    int i, j;
+    float preu;
     
+    //Rebo ticker-naccions-preu
+    sAux = (char*)malloc(sizeof(char));
+    while (trama.Data[i] != '-') {
+        sAux[i] = trama.Data[i];
+        i++;
+        sAux = (char*)realloc(sAux, sizeof(char) * (i+1));
+    }
+    sAux[i] = '\0';
+    sprintf(sText, "[GEKKO]: Venta realitzada. %s ", sAux);
+    i++;
+    j = 0;
+    while (trama.Data[i] != '-') {
+        sAux[j] = trama.Data[i];
+        i++;
+        j++;
+        sAux = (char*)realloc(sAux, sizeof(char) * (j+1));
+    }
+    sAux[j] = '\0';
+    strcat(sText, sAux);
+    strcat(sText, " accions. ");
+    i++;
+    j = 0;
+    while (trama.Data[i] != '\0') {
+        sAux[j] = trama.Data[i];
+        i++;
+        j++;
+        sAux = (char*)realloc(sAux, sizeof(char) * (j+1));
+    }
+    sAux[j] = '\0';
+    strcat(sText, sAux);
+    strcat(sText, "€.\n");
+    //Actualitzem preu
+    preu = atof(sAux);
+    stOperador.fDinersTotals = stOperador.fDinersTotals + preu;
+    write(1, sText, sizeof(sText));
+    free(sAux);
 }
 
 /*********************************************************************************************************
