@@ -34,10 +34,10 @@ void desconnexio();
  *********************************************************************************************************/
 
 void kctrlc(){
+    Fitxer_guardaFitxerStock(&stOperador);
     LlistaPDIAccio_destrueix(&stOperador.llistaAccions);
     desconnexio();
     sem_destroy(&semafor);
-    Fitxer_guardaFitxerStock(&stOperador);
     exit(0);
 }
 
@@ -498,6 +498,7 @@ int main() {
     desconnexio();
     sem_destroy(&semafor);
     Fitxer_guardaFitxerStock(&stOperador);
+    LlistaPDIAccio_destrueix(&stOperador.llistaAccions);
     
 	return 0;
 }

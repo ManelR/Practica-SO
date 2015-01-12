@@ -57,7 +57,6 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
     //Analitza Comanda
     if (!strcmp("exit", sComanda)) {
         write(1, "\nSayonara\n", sizeof("\nSayonara\n"));
-        LlistaPDIAccio_destrueix(&stOperador->llistaAccions);
         *sortir = 1;
     }else if(!strcmp("show me the money", sComanda)){
         bzero(sText, sizeof(sText));
