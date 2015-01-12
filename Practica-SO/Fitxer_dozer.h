@@ -14,5 +14,6 @@
 
 void Fitxer_carregaFitxerStock(int file_stock, Operador* stOperador);
 void Fitxer_carregaFitxerConfig(int file_config, IpInfo* stIP);
+void Fitxer_guardaFitxerStock(Operador* stOperador);
 
 #endif 

@@ -8,6 +8,62 @@
 
 #include "Fitxer_dozer.h"
 
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: guardaFitxerStock
+ *   @Def: Función que sirve para guardar la información actualizada en el fichero stock.dat
+ *   @Arg:   In: -
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void Fitxer_guardaFitxerStock(Operador* stOperador){
+    int file_stock, i = 0;
+    char *sText, sAux[100];
+    Accio a;
+    
+    ///MANEL NO SE PERQ NO FA EL OPEN
+    printf("\n\nENTRA1\n\n");
+    file_stock = open("stock.dat", O_TRUNC | O_RDWR);
+    printf("\n\nENTRA1\n\n");
+    if(file_stock < 0){
+        write(1, "Error al guardar el fichero de stock.\n", strlen("Error al guardar el fichero de stock.\n"));
+    }else{
+        printf("\n\nENTRA1\n\n");
+        /*sprintf(sAux, "%.2f\n", stOperador->fDinersTotals);
+        printf("\n\nENTRA1\n\n");
+        sText = (char*) malloc((strlen(stOperador->cNom) + sizeof(char)));
+        printf("\n\nENTRA1\n\n");
+        for (i = 0; i < strlen(stOperador->cNom); i++) {
+            sText[i] = stOperador->cNom[i];
+        }
+        printf("\n\nENTRA1\n\n");
+        sText[i] = '\n';
+        printf("\n\nENTRA1\n\n");
+        sText[i+1] = '\0';
+        printf("\n\nENTRA1\n\n");
+        sText = (char*) realloc(sText, strlen(sText) + strlen(sAux));
+        strcat(sText, sAux);
+        LlistaPDIAccio_vesInici(&stOperador->llistaAccions);
+        printf("\n\nENTRA\n\n");
+        while (!LlistaPDIAccio_fi(stOperador->llistaAccions)) {
+            a = LlistaPDIAccio_consulta(stOperador->llistaAccions);
+            sprintf(sAux, "%s-%d\n", a.cTicker ,a.nAccions);
+            sText = (char*) realloc(sText, strlen(sText) + strlen(sAux));
+            strcat(sText, sAux);
+            LlistaPDIAccio_avanca(&stOperador->llistaAccions);
+        }
+        while (sText[i] != '\0') {
+            write(file_stock, &sText[i], 1);
+            i++;
+        }
+        free(sText);*/
+        close(file_stock);
+    }
+}
+
 /*********************************************************************************************************
  *
  *   @Nombre: carregaFitxerStock
