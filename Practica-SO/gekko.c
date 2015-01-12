@@ -201,7 +201,7 @@ void actualitzarInformacio(){
         write(1, "Dades actualitzades\n", strlen("Dades actualitzades\n"));
         nPeticio++;
         if(nPeticio == stIP.nPeticio){
-            guardaDades();
+            //guardaDades();
             nPeticio = 0;
         }
     }
