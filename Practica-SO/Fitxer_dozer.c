@@ -30,22 +30,25 @@ void Fitxer_guardaFitxerStock(Operador* stOperador){
     }else{
         sprintf(sAux, "%.2f\n", stOperador->fDinersTotals);
         sText = (char*) malloc((strlen(stOperador->cNom) + sizeof(char)));
-        for (i = 0; i < strlen(stOperador->cNom); i++) {
+        for (i = 0; i < (int)strlen(stOperador->cNom); i++) {
             sText[i] = stOperador->cNom[i];
         }
-        printf("\n\n%s\n\n", sText);
         sText[i] = '\n';
         sText[i+1] = '\0';
+        printf("\n\n%s\n\n", sText);
         sText = (char*) realloc(sText, strlen(sText) + strlen(sAux));
         strcat(sText, sAux);
+        printf("\n\n%s\n\n", sText);
         LlistaPDIAccio_vesInici(&stOperador->llistaAccions);
         while (!LlistaPDIAccio_fi(stOperador->llistaAccions)) {
             a = LlistaPDIAccio_consulta(stOperador->llistaAccions);
+            bzero(sAux, 100);
             sprintf(sAux, "%s-%d\n", a.cTicker ,a.nAccions);
             sText = (char*) realloc(sText, strlen(sText) + strlen(sAux));
             strcat(sText, sAux);
             LlistaPDIAccio_avanca(&stOperador->llistaAccions);
         }
+        i = 0;
         while (sText[i] != '\0') {
             write(file_stock, &sText[i], 1);
             i++;
