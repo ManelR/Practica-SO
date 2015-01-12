@@ -495,11 +495,10 @@ int main() {
     while(sortir == 0){
         Shell_analitzaComanda(&sortir, &stOperador, sockGekko, &semafor);
     }
-    desconnexio();
-    sem_destroy(&semafor);
     Fitxer_guardaFitxerStock(&stOperador);
     LlistaPDIAccio_destrueix(&stOperador.llistaAccions);
-    
+    desconnexio();
+    sem_destroy(&semafor);
 	return 0;
 }
 
