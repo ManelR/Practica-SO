@@ -35,10 +35,8 @@ void Fitxer_guardaFitxerStock(Operador* stOperador){
         }
         sText[i] = '\n';
         sText[i+1] = '\0';
-        printf("\n\n%s\n\n", sText);
         sText = (char*) realloc(sText, strlen(sText) + strlen(sAux));
         strcat(sText, sAux);
-        printf("\n\n%s\n\n", sText);
         LlistaPDIAccio_vesInici(&stOperador->llistaAccions);
         while (!LlistaPDIAccio_fi(stOperador->llistaAccions)) {
             a = LlistaPDIAccio_consulta(stOperador->llistaAccions);

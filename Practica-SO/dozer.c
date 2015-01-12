@@ -453,7 +453,6 @@ void* escoltaGekko(void * data){
                 write(1, "Error amb la connexió del servidor\n", strlen("Error amb la connexió del servidor\n"));
                 break;
         }
-        //unlock
     }
     return NULL;
 }

@@ -162,7 +162,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
                                     }
                                     //Enviar
                                     write(sockGekko, &trama, sizeof(trama));
-                                    //Lock del thread
+                                    //wait del thread
                                     sem_wait(semafor);
                                 }else{
                                     write(1, "\nComanda incorrecta, tens masses diners per enviar la trama al Gekko.\n\n", sizeof("\nComanda incorrecta, tens masses diners per enviar la trama al Gekko.\n\n"));
@@ -208,7 +208,6 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
                                             for (i = strlen(sText); i < SDADES; i++) {
                                                 trama.Data[i] = '\0';
                                             }
-                                            printf("%s\n",trama.Data);
                                             write(sockGekko, &trama, sizeof(trama));
                                             //Lock del thread
                                             sem_wait(semafor);
@@ -230,10 +229,40 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
                         }
                     }else if (!strcmp(sAccio, "erase")) {
                         //erase
-                        //comprovar si hi ha numero enter
-                        
-                        //Lock del thread
-                        sem_wait(semafor);
+                        //Comprovar que tingui 5 o menys lletres el ticker
+                        if (strlen(sTicker) < 6) {
+                            //Comprovar si han entrat nombre enter d'accions
+                            i = 0;
+                            while (sNombreAccions[i] >= '0' && sNombreAccions[i] <= '9') {
+                                i++;
+                            }
+                            if (sNombreAccions[i] == '\0' && strlen(sNombreAccions) < 47) {
+                                strcpy(trama.Origen, stOperador->cNom);
+                                for (i = strlen(trama.Origen); i < SORIGEN; i++) {
+                                    trama.Origen[i] = '\0';
+                                }
+                                trama.Tipus = 'D';
+                                strcpy(sText, sTicker);
+                                i = strlen(sText);
+                                sText[i] = '-';
+                                sText[i+1] = '\0';
+                                strcat(sText, sNombreAccions);
+                                strcpy(trama.Data, sText);
+                                for (i = strlen(trama.Data); i < SDADES; i++) {
+                                    trama.Data[i] = '\0';
+                                }
+                                //Enviar
+                                write(sockGekko, &trama, sizeof(trama));
+                                //wait del thread
+                                sem_wait(semafor);
+                            }else if(sNombreAccions[i] != '\0'){
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
+                            }else{
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n"));
+                            }
+                        }else{
+                            write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
+                        }
                     }else{
                         write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
                     }
