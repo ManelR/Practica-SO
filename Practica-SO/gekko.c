@@ -18,7 +18,7 @@ Accio ibex[35];
 InfoVentes ventes[35];
 IpInfo stIP;
 int sockTumb, nPeticio = 0;
-static int nLectures = 0; //Variable per controlar les lectures i escriptura del ibex.
+static int nLecturesIbex = 0; //Variable per controlar les lectures i escriptura del ibex.
 struct sockaddr_in servTumb;
 AccioXML ibexXML[35];
 
@@ -26,6 +26,8 @@ AccioXML ibexXML[35];
 static pthread_mutex_t mutex_lectors = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t mutex_escriptor = PTHREAD_MUTEX_INITIALIZER;
 
+//Mutex per controlar la lectura i escriptura de les ventes. (Només un ja que al estar dins una llista es modifica constantment).
+static pthread_mutex_t mutex_ventes = PTHREAD_MUTEX_INITIALIZER;
 
 //Funcions definides
 void actualitzarInformacio();
@@ -53,14 +55,14 @@ void iniciLecturaIbex(){
         sprintf (sFrase,"pthread_mutex_lock Inici Lector\n");
         write(1,sFrase,strlen(sFrase));
     }
-    if (nLectures == 0) {
+    if (nLecturesIbex == 0) {
         s = pthread_mutex_lock(&mutex_escriptor);
         if (s != 0){
             sprintf (sFrase,"pthread_mutex_lock Inici Lector - Escriptor\n");
             write(1,sFrase,strlen(sFrase));
         }
     }
-    nLectures++;
+    nLecturesIbex++;
     s = pthread_mutex_unlock(&mutex_lectors);
 }
 
@@ -73,8 +75,8 @@ void fiLecturaIbex(){
         sprintf (sFrase,"pthread_mutex_lock Fi Lector\n");
         write(1,sFrase,strlen(sFrase));
     }
-    nLectures--;
-    if (nLectures == 0) {
+    nLecturesIbex--;
+    if (nLecturesIbex == 0) {
         s = pthread_mutex_unlock(&mutex_escriptor);
     }
     s = pthread_mutex_unlock(&mutex_lectors);
@@ -92,11 +94,15 @@ void fiLecturaIbex(){
 
 void kctrlc(){
     int i = 0;
+    pthread_mutex_lock(&mutex_ventes);
     for (i = 0; i < 35; i++) {
         LlistaPDIVenta_destrueix(&ventes[i].llista);
     }
+    pthread_mutex_unlock(&mutex_ventes);
+    
     pthread_mutex_destroy(&mutex_escriptor);
     pthread_mutex_destroy(&mutex_lectors);
+    pthread_mutex_destroy(&mutex_ventes);
     desconnexio();
     exit(0);
 }
@@ -339,11 +345,13 @@ void showIbex(int fdDozer){
     for (i = 0; i < 35; i++) {
         auxNumAccions = ibex[i].llAccions;
         //Accions de les llistes
+        pthread_mutex_lock(&mutex_ventes);
         LlistaPDIVenta_vesInici(&ventes[i].llista);
         while (!LlistaPDIVenta_fi(ventes[i].llista)) {
             auxNumAccions += LlistaPDIVenta_consulta(ventes[i].llista).nNumAccions;
             LlistaPDIVenta_avanca(&ventes[i].llista);
         }
+        pthread_mutex_unlock(&mutex_ventes);
         bzero(sText, sizeof(sText));
         sprintf(sText, "%s\t%f\t%lld", ibex[i].cTicker, ibex[i].fPreu, auxNumAccions);
         strcpy(trama.Data, sText);
@@ -440,6 +448,7 @@ void buy(int fdDozer, Trama trama){
         strcpy(tramaEnviar.Data, "Error. L'acció no està dins IBEX35");
     }else{
         //Comprovar disponiblitat de les Accions a les llistes dels Dozers
+        pthread_mutex_lock(&mutex_ventes);
         LlistaPDIVenta_vesInici(&ventes[j].llista);
         while (!LlistaPDIVenta_fi(ventes[j].llista) && sortirAccions == 0) {
             //S'ha trobat accions per comprar
@@ -474,6 +483,7 @@ void buy(int fdDozer, Trama trama){
                 LlistaPDIVenta_avanca(&ventes[j].llista);
             }
         }
+        pthread_mutex_unlock(&mutex_ventes);
         //Si falten agafar del Gekko
         if (sortirAccions == 0) {
             iniciLecturaIbex();
@@ -566,6 +576,7 @@ void sell(int fdDozer, Trama trama){
         }
         //Guardar la venta
         //Afegir al final
+        pthread_mutex_lock(&mutex_ventes);
         while (!LlistaPDIVenta_fi(ventes[nPosicio].llista)) {
             LlistaPDIVenta_avanca(&ventes[nPosicio].llista);
         }
@@ -573,6 +584,7 @@ void sell(int fdDozer, Trama trama){
         auxVenta.nSocket = fdDozer;
         strcpy(auxVenta.sOperador, trama.Origen);
         LlistaPDIVenta_insereix(&ventes[nPosicio].llista, auxVenta);
+        pthread_mutex_unlock(&mutex_ventes);
     }else{
         strcpy(tramaEnviar.Data, "Error amb la venta.");
     }
@@ -637,6 +649,7 @@ void esborra(int fdDozer, Trama trama){
     fiLecturaIbex();
     //Si trobat = 1 vol dir que les accions existeixen, falta mirar si aquest operador les està venent.
     if (trobat == 1) {
+        pthread_mutex_lock(&mutex_ventes);
         LlistaPDIVenta_vesInici(&ventes[nPosicio].llista);
         trobat = 0;
         //primer recorregut per saber si hi ha suficients accions
@@ -651,10 +664,12 @@ void esborra(int fdDozer, Trama trama){
             }
             LlistaPDIVenta_avanca(&ventes[nPosicio].llista);
         }
+        pthread_mutex_unlock(&mutex_ventes);
         //Si hi ha suficients accions modifiquem la informació.
         if (trobat == 1) {
             trobat = 0;
             auxNumAccions = numAccions;
+            pthread_mutex_lock(&mutex_ventes);
             LlistaPDIVenta_vesInici(&ventes[nPosicio].llista);
             while (!LlistaPDIVenta_fi(ventes[nPosicio].llista) && trobat == 0) {
                 auxVenta = LlistaPDIVenta_consulta(ventes[nPosicio].llista);
@@ -678,6 +693,7 @@ void esborra(int fdDozer, Trama trama){
                 }
                 LlistaPDIVenta_avanca(&ventes[nPosicio].llista);
             }
+            pthread_mutex_unlock(&mutex_ventes);
             if (trobat == 1) {
                 bzero(tramaEnviar.Data, sizeof(tramaEnviar.Data));
                 sprintf(tramaEnviar.Data, "%d-%s", numAccions, sTicker);
@@ -843,9 +859,11 @@ int main() {
     signal(SIGALRM, ksighandler);
     
     //Inicialització de les llistes de ventes
+    pthread_mutex_lock(&mutex_ventes);
     for (i = 0; i < 35; i++) {
         ventes[i].llista = LlistaPDIVenta_crea();
     }
+    pthread_mutex_unlock(&mutex_ventes);
     
     file_config = open("config_tumblingdice.dat", O_RDONLY);
     if (file_config < 0) {
@@ -860,7 +878,9 @@ int main() {
         exit(-1);
     }
     pthread_mutex_lock(&mutex_escriptor);
+    pthread_mutex_lock(&mutex_ventes);
     Fitxer_carregaFitxerIbex(file_ibex, ibex, ventes);
+    pthread_mutex_unlock(&mutex_ventes);
     pthread_mutex_unlock(&mutex_escriptor);
     write(1, "IBEX INFO\n", strlen("IBEX INFO\n"));
     iniciLecturaIbex();
