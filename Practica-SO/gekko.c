@@ -21,6 +21,7 @@ int sockTumb, nPeticio = 0;
 struct sockaddr_in servTumb;
 AccioXML ibexXML[35];
 
+//Prova git
 
 void actualitzarInformacio();
 int connexio();
