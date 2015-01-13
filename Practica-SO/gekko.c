@@ -517,6 +517,105 @@ void sell(int fdDozer, Trama trama){
  *********************************************************************************************************/
 
 void esborra(int fdDozer, Trama trama){
+    Trama tramaEnviar;
+    char sText[100];
+    int nContador = 0;
+    int nPosicio = 0;
+    int numAccions = 0;
+    char sTicker[10];
+    int trobat = 0;
+    Venta auxVenta;
+    int auxNumAccions = 0;
+    
+    //Preparar la trama a enviar
+    strcpy(tramaEnviar.Origen, "Gekko");
+    tramaEnviar.Tipus = 'D';
+    
+    //Analitzar les dades
+    //Rebo -> Nom-NumAccions
+    //Envio -> NumAccions-Nom
+    
+    while (trama.Data[nContador] != '-' && nContador < 100) {
+        sText[nContador] = trama.Data[nContador];
+        nContador++;
+    }
+    sText[nContador] = '\0';
+    nContador++;
+    nPosicio = 0;
+    strcpy(sTicker, sText);
+    while (trama.Data[nContador] != '\0' && nContador < 100) {
+        sText[nPosicio] = trama.Data[nContador];
+        nContador++;
+        nPosicio++;
+    }
+    sText[nPosicio] = '\0';
+    numAccions = atoi(sText);
+    
+    //Comprovar les dades
+    for (nContador = 0; nContador < 35 && !trobat; nContador++) {
+        if (!strcasecmp(sTicker, ibex[nContador].cTicker)) {
+            trobat = 1;
+            nPosicio = nContador;
+        }
+    }
+    //Si trobat = 1 vol dir que les accions existeixen, falta mirar si aquest operador les està venent.
+    if (trobat == 1) {
+        LlistaPDIVenta_vesInici(&ventes[nPosicio].llista);
+        trobat = 0;
+        //primer recorregut per saber si hi ha suficients accions
+        while (!LlistaPDIVenta_fi(ventes[nPosicio].llista) && trobat == 0) {
+            auxVenta = LlistaPDIVenta_consulta(ventes[nPosicio].llista);
+            if (!strcmp(auxVenta.sOperador, trama.Origen)) {
+                //S'ha trobat unes accions a la venta
+                auxNumAccions += auxVenta.nNumAccions;
+                if (auxNumAccions >= numAccions) {
+                    trobat = 1;
+                }
+            }
+            LlistaPDIVenta_avanca(&ventes[nPosicio].llista);
+        }
+        //Si hi ha suficients accions modifiquem la informació.
+        if (trobat == 1) {
+            trobat = 0;
+            auxNumAccions = numAccions;
+            LlistaPDIVenta_vesInici(&ventes[nPosicio].llista);
+            while (!LlistaPDIVenta_fi(ventes[nPosicio].llista) && trobat == 0) {
+                auxVenta = LlistaPDIVenta_consulta(ventes[nPosicio].llista);
+                if (!strcmp(auxVenta.sOperador, trama.Origen)) {
+                    //s'ha trobat unes accions a la venta, com que ja sabem que hi ha suficients a la venta les esborrem
+                    auxNumAccions -= auxVenta.nNumAccions;
+                    //Tres casos possibles < > =
+                    if (auxNumAccions > 0) {
+                        //Encara queden accions per esborrar
+                        LlistaPDIVenta_esborra(&ventes[nPosicio].llista);
+                    }else if (auxNumAccions == 0){
+                        LlistaPDIVenta_esborra(&ventes[nPosicio].llista);
+                        trobat = 1;
+                    }else if (auxNumAccions < 0){
+                        //Hi ha mes accions a la venta de les que es volen borrar, per tant cal modificar el contingut
+                        auxVenta.nNumAccions -= auxNumAccions;
+                        LlistaPDIVenta_esborra(&ventes[nPosicio].llista);
+                        LlistaPDIVenta_insereix(&ventes[nPosicio].llista, auxVenta);
+                        trobat = 1;
+                    }
+                }
+                LlistaPDIVenta_avanca(&ventes[nPosicio].llista);
+            }
+            if (trobat == 1) {
+                bzero(tramaEnviar.Data, sizeof(tramaEnviar.Data));
+                sprintf(tramaEnviar.Data, "%d-%s", numAccions, sTicker);
+            }else{
+                strcpy(tramaEnviar.Data, "Error en eliminar les accions...");
+            }
+        }else{
+            strcpy(tramaEnviar.Data, "Error no tens suficients accions a la venta.");
+        }
+    }else{
+        strcpy(tramaEnviar.Data, "Error el nom de l'acció no és correcte.");
+    }
+    
+    //Enviar
+    write(fdDozer, &tramaEnviar, sizeof(tramaEnviar));
     
 }
 
@@ -571,7 +670,12 @@ void* dozer(void * data){
                     buy((int)data, trama);
                     break;
                 case 'S':
+                    //SELL
                     sell((int)data, trama);
+                    break;
+                case 'D':
+                    //Esborrar
+                    esborra((int)data, trama);
                     break;
                 default:
                     break;

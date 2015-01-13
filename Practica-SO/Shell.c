@@ -251,7 +251,6 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
                                 for (i = strlen(trama.Data); i < SDADES; i++) {
                                     trama.Data[i] = '\0';
                                 }
-                                printf("\n\n%s\n\n", trama.Data);
                                 //Enviar
                                 write(sockGekko, &trama, sizeof(trama));
                                 //wait del thread
