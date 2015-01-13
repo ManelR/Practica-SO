@@ -224,7 +224,7 @@ void actualitzarInformacio(){
                     ibexXML[i].fPreuFinal = ibex[i].fPreu;
                 }
                 //Actualitzem el fitxer
-                Fitxer_actualitzaXML(ibexXML);
+                //Fitxer_actualitzaXML(ibexXML);
                 nPeticio = 0;
             }
         }
@@ -465,13 +465,14 @@ void sell(int fdDozer, Trama trama){
     
     //Comprovar les dades
     for (nContador = 0; nContador < 35 && !trobat; nContador++) {
-        if (strcasecmp(sTicker, ibex[nContador].cTicker)) {
+        if (!strcasecmp(sTicker, ibex[nContador].cTicker)) {
             trobat = 1;
             nPosicio = nContador;
+            write(1, "HOLA\n", strlen("HOLA\n"));
         }
     }
     
-    if (trobat) {
+    if (trobat == 1) {
         strcpy(tramaEnviar.Data, trama.Data);
         //Guardar la venta
         //Afegir al final
@@ -481,8 +482,10 @@ void sell(int fdDozer, Trama trama){
         auxVenta.nNumAccions = numAccions;
         auxVenta.nSocket = fdDozer;
         strcpy(auxVenta.sOperador, trama.Origen);
+        write(1, "HOLA2\n", strlen("HOLA2\n"));
         LlistaPDIVenta_insereix(&ventes[nPosicio].llista, auxVenta);
     }else{
+        write(1, "HOL3A\n", strlen("HOLA3\n"));
         strcpy(tramaEnviar.Data, "Error amb la venta.");
     }
     
@@ -539,6 +542,9 @@ void* dozer(void * data){
                 case 'B':
                     //BUY
                     buy((int)data, trama);
+                    break;
+                case 'S':
+                    sell((int)data, trama);
                     break;
                 default:
                     break;
