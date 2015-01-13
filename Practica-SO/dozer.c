@@ -280,9 +280,7 @@ void sell(Trama trama){
                 a.nAccions = a.nAccions - nAccions;
                 LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
                 break;
-                printf("\n\nHOFA1\n\n");
             }
-            printf("\n\nHOFA2\n\n");
             LlistaPDIAccio_avanca(&stOperador.llistaAccions);
         }
         free(sAux);

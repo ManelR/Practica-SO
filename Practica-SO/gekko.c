@@ -322,8 +322,9 @@ void sendToDozerBuy(int fdDozer, char* sNom, int nNumAccions, float fDiners){
 /*********************************************************************************************************
  *
  *   @Nombre: buy
- *   @Def: Función que sirve para gestionar las ventas del dozer.
+ *   @Def: Función que sirve para gestionar las compras del dozer.
  *   @Arg:   In: fdDozer -> fd del Dozer que solicita la información.
+ *               trama -> Mensaje del dozer
  *           Out: -
  *   @Ret: -
  *
@@ -433,6 +434,16 @@ void buy(int fdDozer, Trama trama){
     write(fdDozer, &tramaEnviar, sizeof(tramaEnviar));
 }
 
+/*********************************************************************************************************
+ *
+ *   @Nombre: sell
+ *   @Def: Función que sirve para gestionar las ventas del dozer.
+ *   @Arg:   In: fdDozer -> fd del Dozer que solicita la información.
+ *               trama -> Mensaje del dozer
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
 
 void sell(int fdDozer, Trama trama){
     Trama tramaEnviar;
@@ -490,9 +501,23 @@ void sell(int fdDozer, Trama trama){
     }else{
         strcpy(tramaEnviar.Data, "Error amb la venta.");
     }
-    
     //Enviar
     write(fdDozer, &tramaEnviar, sizeof(tramaEnviar));
+}
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: esborra
+ *   @Def: Función que sirve para gestionar las ventas del dozer.
+ *   @Arg:   In: fdDozer -> fd del Dozer que solicita la información.
+ *               trama -> Mensaje del dozer
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void esborra(int fdDozer, Trama trama){
+    
 }
 
 /*********************************************************************************************************
