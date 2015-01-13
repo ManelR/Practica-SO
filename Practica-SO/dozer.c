@@ -20,6 +20,7 @@ int sockGekko;
 struct sockaddr_in servGekko;
 sem_t semafor;
 sem_t mutex;
+pthread_t thread_id;
 
 int connexio();
 void desconnexio();
@@ -35,6 +36,7 @@ void desconnexio();
  *********************************************************************************************************/
 
 void kctrlc(){
+    pthread_cancel(thread_id);
     desconnexio();
     Fitxer_guardaFitxerStock(&stOperador);
     LlistaPDIAccio_destrueix(&stOperador.llistaAccions);
@@ -470,7 +472,7 @@ int main() {
     int file_stock, file_config, sortir = 0;
     //Inicialitzem el semafor pel thread que escoltara les trames del Gekko
     sem_init(&semafor, 0, 0);
-    sem_init(&mutex, 1, 0);
+    sem_init(&mutex, 0, 1);
     
     stOperador.llistaAccions = LlistaPDIAccio_crea();
     signal(SIGINT, ksighandler);
@@ -494,7 +496,7 @@ int main() {
     }
     
     //Crear el thread que escoltara al Gekko
-    pthread_t thread_id;
+    
     pthread_attr_t attr;
     
     pthread_attr_init(&attr);
@@ -505,6 +507,7 @@ int main() {
         Shell_analitzaComanda(&sortir, &stOperador, sockGekko, &semafor);
         sem_post(&mutex);
     }
+    pthread_cancel(thread_id);
     desconnexio();
     Fitxer_guardaFitxerStock(&stOperador);
     LlistaPDIAccio_destrueix(&stOperador.llistaAccions);

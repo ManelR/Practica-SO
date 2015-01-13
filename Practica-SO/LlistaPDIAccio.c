@@ -65,7 +65,6 @@ void LlistaPDIAccio_esborra(LlistaPDIAccio * l){
 
 void LlistaPDIAccio_avanca(LlistaPDIAccio * l){
     if (l->pstAnt->pstSeg == NULL) {
-        write(1,"No es pot avançar!\n",strlen("No es pot avançar!\n"));
     }else{
         l->pstAnt = l->pstAnt->pstSeg;
     }
