@@ -18,15 +18,16 @@ Accio ibex[35];
 InfoVentes ventes[35];
 IpInfo stIP;
 int sockTumb, nPeticio = 0;
-static int nLectures = 0; //Variable per controlar les lectures i escriptura del ibex
+static int nLectures = 0; //Variable per controlar les lectures i escriptura del ibex.
 struct sockaddr_in servTumb;
 AccioXML ibexXML[35];
 
+//Mutex per controlar la lectura i escriptura de la informació de l'ibex. (implementació de Lector-Escriptor)
 static pthread_mutex_t mutex_lectors = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t mutex_escriptor = PTHREAD_MUTEX_INITIALIZER;
 
-//Prova git
 
+//Funcions definides
 void actualitzarInformacio();
 int connexio();
 void desconnexio();
