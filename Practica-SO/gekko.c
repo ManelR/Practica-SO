@@ -18,8 +18,12 @@ Accio ibex[35];
 InfoVentes ventes[35];
 IpInfo stIP;
 int sockTumb, nPeticio = 0;
+static int nLectures = 0; //Variable per controlar les lectures i escriptura del ibex
 struct sockaddr_in servTumb;
 AccioXML ibexXML[35];
+
+static pthread_mutex_t mutex_lectors = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t mutex_escriptor = PTHREAD_MUTEX_INITIALIZER;
 
 //Prova git
 
@@ -28,6 +32,52 @@ int connexio();
 void desconnexio();
 void escoltaDozers();
 void nouDozer(int newSockDozer);
+
+/*********************************************************************************************************
+ *
+ *   @Nombre: iniciLecturaIbex, fiLecturaIbex
+ *   @Def: Función que controla los mutex para leer y escribir de la información del ibex
+ *   @Arg:   In: -
+ *           Out: -
+ *   @Ret: -
+ *
+ *********************************************************************************************************/
+
+void iniciLecturaIbex(){
+    int s = 0;
+    char sFrase[100];
+    
+    s = pthread_mutex_lock(&mutex_lectors);
+    if (s != 0){
+        sprintf (sFrase,"pthread_mutex_lock Inici Lector\n");
+        write(1,sFrase,strlen(sFrase));
+    }
+    if (nLectures == 0) {
+        s = pthread_mutex_lock(&mutex_escriptor);
+        if (s != 0){
+            sprintf (sFrase,"pthread_mutex_lock Inici Lector - Escriptor\n");
+            write(1,sFrase,strlen(sFrase));
+        }
+    }
+    nLectures++;
+    s = pthread_mutex_unlock(&mutex_lectors);
+}
+
+void fiLecturaIbex(){
+    int s = 0;
+    char sFrase[100];
+    
+    s = pthread_mutex_lock(&mutex_lectors);
+    if (s != 0){
+        sprintf (sFrase,"pthread_mutex_lock Fi Lector\n");
+        write(1,sFrase,strlen(sFrase));
+    }
+    nLectures--;
+    if (nLectures == 0) {
+        s = pthread_mutex_unlock(&mutex_escriptor);
+    }
+    s = pthread_mutex_unlock(&mutex_lectors);
+}
 
 /*********************************************************************************************************
  *
@@ -44,12 +94,16 @@ void kctrlc(){
     for (i = 0; i < 35; i++) {
         LlistaPDIVenta_destrueix(&ventes[i].llista);
     }
+    pthread_mutex_destroy(&mutex_escriptor);
+    pthread_mutex_destroy(&mutex_lectors);
     desconnexio();
     exit(0);
 }
 
 void kalarm(){
+    pthread_mutex_lock(&mutex_escriptor);
     actualitzarInformacio();
+    pthread_mutex_unlock(&mutex_escriptor);
     alarm(stIP.nSegons);
 }
 
@@ -280,6 +334,7 @@ void showIbex(int fdDozer){
     trama.Tipus = 'X';
     
     //Preparar les dades i enviar
+    iniciLecturaIbex();
     for (i = 0; i < 35; i++) {
         auxNumAccions = ibex[i].llAccions;
         //Accions de les llistes
@@ -294,6 +349,7 @@ void showIbex(int fdDozer){
         //Enviar
         write(fdDozer, &trama, sizeof(trama));
     }
+    fiLecturaIbex();
     
 }
 
@@ -372,11 +428,13 @@ void buy(int fdDozer, Trama trama){
     
     //Comprovar si les accions existeixen
     j = -1;
+    iniciLecturaIbex();
     for (i = 0; i < 35; i++) {
         if(strcasecmp(ibex[i].cTicker, sNom) == 0){
             j = i;
         }
     }
+    fiLecturaIbex();
     if (j == -1) {
         strcpy(tramaEnviar.Data, "Error. L'acció no està dins IBEX35");
     }else{
@@ -389,7 +447,9 @@ void buy(int fdDozer, Trama trama){
                 //Hi ha les accions necessaries
                 LlistaPDIVenta_esborra(&ventes[j].llista);
                 //Enviar al Dozer que té les accions en venta
+                iniciLecturaIbex();
                 sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, nNumAccions, ibex[j].fPreu * nNumAccions);
+                fiLecturaIbex();
                 sortirAccions = 1;
             }else if (auxVenta.nNumAccions > nNumAccions){
                 //Es pot comprar pero cal modificar la llista
@@ -397,13 +457,17 @@ void buy(int fdDozer, Trama trama){
                 LlistaPDIVenta_esborra(&ventes[j].llista);
                 LlistaPDIVenta_insereix(&ventes[j].llista, auxVenta);
                 //Enviar al Dozer que té les accions en venta
+                iniciLecturaIbex();
                 sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, nNumAccions, ibex[j].fPreu * nNumAccions);
+                fiLecturaIbex();
                 sortirAccions = 1;
             }else if (auxVenta.nNumAccions < nNumAccions){
                 //Es pot comprar d'aqui pero cal avançar
                 LlistaPDIVenta_esborra(&ventes[j].llista);
                 //Enviar al Dozer que té les accions en venta
+                iniciLecturaIbex();
                 sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, nNumAccions, ibex[j].fPreu * nNumAccions);
+                fiLecturaIbex();
                 //Decrementar el numero d'accions que encara s'han de comprar
                 nNumAccions = nNumAccions - auxVenta.nNumAccions;
                 LlistaPDIVenta_avanca(&ventes[j].llista);
@@ -411,14 +475,21 @@ void buy(int fdDozer, Trama trama){
         }
         //Si falten agafar del Gekko
         if (sortirAccions == 0) {
+            iniciLecturaIbex();
             if (ibex[j].llAccions >= nNumAccions) {
+                fiLecturaIbex();
+                //CAL PROTEGIR LA MODIFICACIÓ DE LES DADES DE L'IBEX
+                pthread_mutex_lock(&mutex_escriptor);
                 ibex[j].llAccions = ibex[j].llAccions - nNumAccions;
+                pthread_mutex_unlock(&mutex_escriptor);
             }else{
+                fiLecturaIbex();
                 nError = 1;
             }
         }
         //Comprovar diners totals
         if( nError == 0){
+            iniciLecturaIbex();
             if (ibex[j].fPreu * nNumAccions > fDiners) {
                 strcpy(tramaEnviar.Data, "Error. Capital insuficient");
             }else{
@@ -426,6 +497,7 @@ void buy(int fdDozer, Trama trama){
                 sprintf(sText, "%f-%s-%d", ibex[j].fPreu * nNumAccions, ibex[j].cTicker, nNumAccions);
                 strcpy(tramaEnviar.Data, sText);
             }
+            fiLecturaIbex();
         }else{
             strcpy(tramaEnviar.Data, "Error. No hi ha suficients accions");
         }
@@ -477,12 +549,14 @@ void sell(int fdDozer, Trama trama){
     numAccions = atoi(sText);
     
     //Comprovar les dades
+    iniciLecturaIbex();
     for (nContador = 0; nContador < 35 && !trobat; nContador++) {
         if (!strcasecmp(sTicker, ibex[nContador].cTicker)) {
             trobat = 1;
             nPosicio = nContador;
         }
     }
+    fiLecturaIbex();
     
     if (trobat == 1) {
         sprintf(tramaEnviar.Data, "%d-%s", numAccions, sTicker);
@@ -552,12 +626,14 @@ void esborra(int fdDozer, Trama trama){
     numAccions = atoi(sText);
     
     //Comprovar les dades
+    iniciLecturaIbex();
     for (nContador = 0; nContador < 35 && !trobat; nContador++) {
         if (!strcasecmp(sTicker, ibex[nContador].cTicker)) {
             trobat = 1;
             nPosicio = nContador;
         }
     }
+    fiLecturaIbex();
     //Si trobat = 1 vol dir que les accions existeixen, falta mirar si aquest operador les està venent.
     if (trobat == 1) {
         LlistaPDIVenta_vesInici(&ventes[nPosicio].llista);
@@ -782,13 +858,17 @@ int main() {
         write(1, "Error al abrir el fichero\n", strlen("Error al abrir el fichero\n"));
         exit(-1);
     }
+    pthread_mutex_lock(&mutex_escriptor);
     Fitxer_carregaFitxerIbex(file_ibex, ibex, ventes);
+    pthread_mutex_unlock(&mutex_escriptor);
     write(1, "IBEX INFO\n", strlen("IBEX INFO\n"));
+    iniciLecturaIbex();
     for(i = 0; i<35;i++){
         bzero(sText, sizeof(sText));
         sprintf(sText, "%s\t%f\t%lld\n",ibex[i].cTicker,ibex[i].fPreu,ibex[i].llAccions);
         write(1, sText, strlen(sText));
     }
+    fiLecturaIbex();
     
     bzero(sText, sizeof(sText));
     sprintf(sText, "\nIP INFO\n %s --- %d -- %d\n\n", stIP.sIP, stIP.nPort, stIP.nSegons);
