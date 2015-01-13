@@ -249,6 +249,7 @@ void sell(Trama trama){
     }else{
         //Rebo Nombre accions-ticker
         sAux = (char*)malloc(sizeof(char));
+        i = 0;
         while (trama.Data[i] != '-') {
             sAux[i] = trama.Data[i];
             i++;
@@ -275,7 +276,9 @@ void sell(Trama trama){
                 a.nAccions = a.nAccions - nAccions;
                 LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
                 break;
+                printf("\n\nHOFA1\n\n");
             }
+            printf("\n\nHOFA2\n\n");
             LlistaPDIAccio_avanca(&stOperador.llistaAccions);
         }
         free(sAux);
@@ -306,6 +309,7 @@ void esborra(Trama trama){
     }else{
         //Rebo Nombre accions-ticker
         sAux = (char*)malloc(sizeof(char));
+        i = 0;
         while (trama.Data[i] != '-') {
             sAux[i] = trama.Data[i];
             i++;
@@ -365,6 +369,7 @@ void vengut(Trama trama){
     
     //Rebo ticker-naccions-preu
     sAux = (char*)malloc(sizeof(char));
+    i = 0;
     while (trama.Data[i] != '-') {
         sAux[i] = trama.Data[i];
         i++;

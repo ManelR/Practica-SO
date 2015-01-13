@@ -441,6 +441,7 @@ void sell(int fdDozer, Trama trama){
     int nPosicio = 0;
     int numAccions = 0;
     int trobat = 0;
+    int i;
     Venta auxVenta;
     
     strcpy(tramaEnviar.Origen, "Gekko");
@@ -468,12 +469,14 @@ void sell(int fdDozer, Trama trama){
         if (!strcasecmp(sTicker, ibex[nContador].cTicker)) {
             trobat = 1;
             nPosicio = nContador;
-            write(1, "HOLA\n", strlen("HOLA\n"));
         }
     }
     
     if (trobat == 1) {
-        strcpy(tramaEnviar.Data, trama.Data);
+        sprintf(tramaEnviar.Data, "%d-%s", numAccions, sTicker);
+        for (i = strlen(tramaEnviar.Data); i < SDADES; i++) {
+            tramaEnviar.Data[i] = '\0';
+        }
         //Guardar la venta
         //Afegir al final
         while (!LlistaPDIVenta_fi(ventes[nPosicio].llista)) {
@@ -482,10 +485,8 @@ void sell(int fdDozer, Trama trama){
         auxVenta.nNumAccions = numAccions;
         auxVenta.nSocket = fdDozer;
         strcpy(auxVenta.sOperador, trama.Origen);
-        write(1, "HOLA2\n", strlen("HOLA2\n"));
         LlistaPDIVenta_insereix(&ventes[nPosicio].llista, auxVenta);
     }else{
-        write(1, "HOL3A\n", strlen("HOLA3\n"));
         strcpy(tramaEnviar.Data, "Error amb la venta.");
     }
     
