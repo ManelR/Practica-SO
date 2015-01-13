@@ -432,6 +432,64 @@ void buy(int fdDozer, Trama trama){
     write(fdDozer, &tramaEnviar, sizeof(tramaEnviar));
 }
 
+
+void sell(int fdDozer, Trama trama){
+    Trama tramaEnviar;
+    char sText[100];
+    int nContador = 0;
+    char sTicker[10];
+    int nPosicio = 0;
+    int numAccions = 0;
+    int trobat = 0;
+    Venta auxVenta;
+    
+    strcpy(tramaEnviar.Origen, "Gekko");
+    tramaEnviar.Tipus = 'S';
+    
+    //Analitzar les dades
+    while (trama.Data[nContador] != '-' && nContador < 100) {
+        sText[nContador] = trama.Data[nContador];
+        nContador++;
+    }
+    sText[nContador] = '\0';
+    nContador++;
+    nPosicio = 0;
+    strcpy(sTicker, sText);
+    while (trama.Data[nContador] != '\0' && nContador < 100) {
+        sText[nPosicio] = trama.Data[nContador];
+        nContador++;
+        nPosicio++;
+    }
+    sText[nPosicio] = '\0';
+    numAccions = atoi(sText);
+    
+    //Comprovar les dades
+    for (nContador = 0; nContador < 35 && !trobat; nContador++) {
+        if (strcasecmp(sTicker, ibex[nContador].cTicker)) {
+            trobat = 1;
+            nPosicio = nContador;
+        }
+    }
+    
+    if (trobat) {
+        strcpy(tramaEnviar.Data, trama.Data);
+        //Guardar la venta
+        //Afegir al final
+        while (!LlistaPDIVenta_fi(ventes[nPosicio].llista)) {
+            LlistaPDIVenta_avanca(&ventes[nPosicio].llista);
+        }
+        auxVenta.nNumAccions = numAccions;
+        auxVenta.nSocket = fdDozer;
+        strcpy(auxVenta.sOperador, trama.Origen);
+        LlistaPDIVenta_insereix(&ventes[nPosicio].llista, auxVenta);
+    }else{
+        strcpy(tramaEnviar.Data, "Error amb la venta.");
+    }
+    
+    //Enviar
+    write(fdDozer, &tramaEnviar, sizeof(tramaEnviar));
+}
+
 /*********************************************************************************************************
  *
  *   @Nombre: dozer
