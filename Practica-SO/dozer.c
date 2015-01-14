@@ -433,42 +433,46 @@ void* escoltaGekko(void * data){
     int nContador = 0;
     
     while (!sortir) {
-        read((int) data, &trama, sizeof(trama));
-        
-        switch (trama.Tipus) {
-            case 'X':
-                //Show ibex
-                showIbex(trama);
-                nContador++;
-                if (nContador == 35) {
+        if(read((int) data, &trama, sizeof(trama)) > 0){
+            
+            switch (trama.Tipus) {
+                case 'X':
+                    //Show ibex
+                    showIbex(trama);
+                    nContador++;
+                    if (nContador == 35) {
+                        sem_post(&semafor);
+                        nContador = 0;
+                    }
+                    break;
+                case 'B':
+                    //Buy
+                    buy(trama);
                     sem_post(&semafor);
-                    nContador = 0;
-                }
-                break;
-            case 'B':
-                //Buy
-                buy(trama);
-                sem_post(&semafor);
-                break;
-            case 'S':
-                //Sell
-                sell(trama);
-                sem_post(&semafor);
-                break;
-            case 'M':
-                //Accions comprades per unaltre operador
-                //sem_wait(&mutex);
-                vengut(trama);
-                //sem_post(&mutex);
-                break;
-            case 'D':
-                //Quan s'esborra una venta
-                esborra(trama);
-                sem_post(&semafor);
-                break;
-            default:
-                write(1, "Error amb la connexió del servidor\n", strlen("Error amb la connexió del servidor\n"));
-                break;
+                    break;
+                case 'S':
+                    //Sell
+                    sell(trama);
+                    sem_post(&semafor);
+                    break;
+                case 'M':
+                    //Accions comprades per unaltre operador
+                    //sem_wait(&mutex);
+                    vengut(trama);
+                    //sem_post(&mutex);
+                    break;
+                case 'D':
+                    //Quan s'esborra una venta
+                    esborra(trama);
+                    sem_post(&semafor);
+                    break;
+                default:
+                    write(1, "Error amb la connexió del servidor\n", strlen("Error amb la connexió del servidor\n"));
+                    break;
+            }
+        }else{
+            sortir = 1;
+            raise(SIGINT);
         }
     }
     return NULL;

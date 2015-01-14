@@ -104,12 +104,23 @@ void fiLecturaIbex(){
 
 void kctrlc(){
     int i = 0;
+    Dozer d;
     pthread_mutex_lock(&mutex_ventes);
     for (i = 0; i < 35; i++) {
         LlistaPDIVenta_destrueix(&ventes[i].llista);
     }
     pthread_mutex_unlock(&mutex_ventes);
     
+    //Tancar els sockets
+    pthread_mutex_lock(&mutex_dozers);
+    LlistaPDIDozer_vesInici(&Dozers);
+    while (!LlistaPDIDozer_fi(Dozers)) {
+        d = LlistaPDIDozer_consulta(Dozers);
+        close(d.nSocket);
+        LlistaPDIDozer_avanca(&Dozers);
+    }
+    
+    pthread_mutex_unlock(&mutex_dozers);
     pthread_mutex_lock(&mutex_dozers);
     LlistaPDIDozer_destrueix(&Dozers);
     pthread_mutex_unlock(&mutex_dozers);
@@ -723,7 +734,7 @@ void esborra(int fdDozer, Trama trama){
                 auxVenta = LlistaPDIVenta_consulta(ventes[nPosicio].llista);
                 if (!strcmp(auxVenta.sOperador, trama.Origen)) {
                     //s'ha trobat unes accions a la venta, com que ja sabem que hi ha suficients a la venta les esborrem
-                    auxNumAccions -= auxVenta.nNumAccions;
+                    auxNumAccions = auxNumAccions - auxVenta.nNumAccions;
                     //Tres casos possibles < > =
                     if (auxNumAccions > 0) {
                         //Encara queden accions per esborrar
@@ -733,13 +744,13 @@ void esborra(int fdDozer, Trama trama){
                         trobat = 1;
                     }else if (auxNumAccions < 0){
                         //Hi ha mes accions a la venta de les que es volen borrar, per tant cal modificar el contingut
-                        auxVenta.nNumAccions -= auxNumAccions;
+                        // *(-1) perque és negatiu
+                        auxVenta.nNumAccions = -1 * auxNumAccions;
                         LlistaPDIVenta_esborra(&ventes[nPosicio].llista);
                         LlistaPDIVenta_insereix(&ventes[nPosicio].llista, auxVenta);
                         trobat = 1;
                     }
                 }
-                LlistaPDIVenta_avanca(&ventes[nPosicio].llista);
             }
             pthread_mutex_unlock(&mutex_ventes);
             if (trobat == 1) {
