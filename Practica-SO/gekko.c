@@ -400,8 +400,9 @@ void buy(int fdDozer, Trama trama){
     char sNom[10];
     int sortirAccions = 0;
     int nNumAccions = 0;
-    int nError = 0;
+    int auxNumAccions = 0;
     float fDiners = 0.0;
+    float fPreu = 0.0;
     int i = 0, j = 0;
     Trama tramaEnviar;
     Venta auxVenta;
@@ -444,73 +445,75 @@ void buy(int fdDozer, Trama trama){
         }
     }
     fiLecturaIbex();
+    auxNumAccions = nNumAccions;
     if (j == -1) {
         strcpy(tramaEnviar.Data, "Error. L'acció no està dins IBEX35");
     }else{
-        //Comprovar disponiblitat de les Accions a les llistes dels Dozers
-        pthread_mutex_lock(&mutex_ventes);
-        LlistaPDIVenta_vesInici(&ventes[j].llista);
-        while (!LlistaPDIVenta_fi(ventes[j].llista) && sortirAccions == 0) {
-            //S'ha trobat accions per comprar
-            auxVenta = LlistaPDIVenta_consulta(ventes[j].llista);
-            if (auxVenta.nNumAccions == nNumAccions) {
-                //Hi ha les accions necessaries
-                LlistaPDIVenta_esborra(&ventes[j].llista);
-                //Enviar al Dozer que té les accions en venta
-                iniciLecturaIbex();
-                sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, nNumAccions, ibex[j].fPreu * nNumAccions);
-                fiLecturaIbex();
-                sortirAccions = 1;
-            }else if (auxVenta.nNumAccions > nNumAccions){
-                //Es pot comprar pero cal modificar la llista
-                auxVenta.nNumAccions = auxVenta.nNumAccions - nNumAccions;
-                LlistaPDIVenta_esborra(&ventes[j].llista);
-                LlistaPDIVenta_insereix(&ventes[j].llista, auxVenta);
-                //Enviar al Dozer que té les accions en venta
-                iniciLecturaIbex();
-                sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, nNumAccions, ibex[j].fPreu * nNumAccions);
-                fiLecturaIbex();
-                sortirAccions = 1;
-            }else if (auxVenta.nNumAccions < nNumAccions){
-                //Es pot comprar d'aqui pero cal avançar
-                LlistaPDIVenta_esborra(&ventes[j].llista);
-                //Enviar al Dozer que té les accions en venta
-                iniciLecturaIbex();
-                sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, nNumAccions, ibex[j].fPreu * nNumAccions);
-                fiLecturaIbex();
-                //Decrementar el numero d'accions que encara s'han de comprar
-                nNumAccions = nNumAccions - auxVenta.nNumAccions;
+        //Primer control d'errors:
+        //Comprovar disponiblitat de les accions (un primer recorregut)
+        iniciLecturaIbex();
+        auxNumAccions -= ibex[j].llAccions;
+        fiLecturaIbex();
+        if (auxNumAccions > 0) {
+            //Mirar les ventes dels dozers
+            pthread_mutex_lock(&mutex_ventes);
+            LlistaPDIVenta_vesInici(&ventes[j].llista);
+            while (!LlistaPDIVenta_fi(ventes[j].llista)) {
+                auxVenta = LlistaPDIVenta_consulta(ventes[j].llista);
+                auxNumAccions -= auxVenta.nNumAccions;
                 LlistaPDIVenta_avanca(&ventes[j].llista);
             }
+            pthread_mutex_unlock(&mutex_ventes);
         }
-        pthread_mutex_unlock(&mutex_ventes);
-        //Si falten agafar del Gekko
-        if (sortirAccions == 0) {
-            iniciLecturaIbex();
-            if (ibex[j].llAccions >= nNumAccions) {
-                fiLecturaIbex();
-                //CAL PROTEGIR LA MODIFICACIÓ DE LES DADES DE L'IBEX
-                pthread_mutex_lock(&mutex_escriptor);
-                ibex[j].llAccions = ibex[j].llAccions - nNumAccions;
-                pthread_mutex_unlock(&mutex_escriptor);
-            }else{
-                fiLecturaIbex();
-                nError = 1;
-            }
-        }
-        //Comprovar diners totals
-        if( nError == 0){
-            iniciLecturaIbex();
+        if (auxNumAccions > 0) {
+            strcpy(tramaEnviar.Data, "Error. No hi ha suficients accions");
+        }else{
+            //Comprovar diners (Aqui ja bloquejem l'ibex perque no es modifiqui el valor de l'acció)
+            pthread_mutex_lock(&mutex_escriptor);
             if (ibex[j].fPreu * nNumAccions > fDiners) {
                 strcpy(tramaEnviar.Data, "Error. Capital insuficient");
             }else{
-                bzero(sText, sizeof(sText));
-                sprintf(sText, "%f-%s-%d", ibex[j].fPreu * nNumAccions, ibex[j].cTicker, nNumAccions);
-                strcpy(tramaEnviar.Data, sText);
+                //Guardem el preu de compra
+                fPreu = ibex[j].fPreu * nNumAccions;
+                //No hi ha error per tant es pot comprar
+                auxNumAccions = nNumAccions;
+                //Comprovar disponiblitat de les Accions a les llistes dels Dozers
+                pthread_mutex_lock(&mutex_ventes);
+                LlistaPDIVenta_vesInici(&ventes[j].llista);
+                while (!LlistaPDIVenta_fi(ventes[j].llista) && sortirAccions == 0) {
+                    //S'ha trobat accions per comprar
+                    auxVenta = LlistaPDIVenta_consulta(ventes[j].llista);
+                    if (auxVenta.nNumAccions == auxNumAccions) {
+                        //Hi ha les accions necessaries
+                        LlistaPDIVenta_esborra(&ventes[j].llista);
+                        //Enviar al Dozer que té les accions en venta
+                        sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, auxNumAccions, ibex[j].fPreu * auxNumAccions);
+                        sortirAccions = 1;
+                    }else if (auxVenta.nNumAccions > auxNumAccions){
+                        //Es pot comprar pero cal modificar la llista
+                        auxVenta.nNumAccions = auxVenta.nNumAccions - auxNumAccions;
+                        LlistaPDIVenta_esborra(&ventes[j].llista);
+                        LlistaPDIVenta_insereix(&ventes[j].llista, auxVenta);
+                        //Enviar al Dozer que té les accions en venta
+                        sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, auxNumAccions, ibex[j].fPreu * auxNumAccions);
+                        sortirAccions = 1;
+                    }else if (auxVenta.nNumAccions < auxNumAccions){
+                        //Es pot comprar d'aqui pero cal avançar
+                        LlistaPDIVenta_esborra(&ventes[j].llista);
+                        //Enviar al Dozer que té les accions en venta
+                        sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, auxVenta.nNumAccions, ibex[j].fPreu * auxVenta.nNumAccions);
+                        //Decrementar el numero d'accions que encara s'han de comprar
+                        auxNumAccions = auxNumAccions - auxVenta.nNumAccions;
+                    }
+                }
+                pthread_mutex_unlock(&mutex_ventes);
+                //Si falten agafar del Gekko
+                if (sortirAccions == 0) {
+                    ibex[j].llAccions = ibex[j].llAccions - auxNumAccions;
+                }
+                sprintf(tramaEnviar.Data, "%f-%s-%d", fPreu, sNom, nNumAccions);
             }
-            fiLecturaIbex();
-        }else{
-            strcpy(tramaEnviar.Data, "Error. No hi ha suficients accions");
+            pthread_mutex_unlock(&mutex_escriptor);
         }
     }
     //Enviar missatge

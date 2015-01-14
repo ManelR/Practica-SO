@@ -173,7 +173,7 @@ void buy(Trama trama){
     if (trama.Data[0] == 'E') {
         strcpy(sText, trama.Data);
         strcat(sText, "\n");
-        write(1,sText,sizeof(sText));
+        write(1,sText,strlen(sText));
     }else{
         //rebem preu-ticker-nombre accions
         sAux = (char*)malloc(sizeof(char));
@@ -225,7 +225,7 @@ void buy(Trama trama){
         LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
         bzero(sText, sizeof(sText));
         sprintf(sText, "Compra realitzada. Cost: %.2f\n", preu);
-        write(1, sText, sizeof(sText));
+        write(1, sText, strlen(sText));
         free(sAux);
     }
 }
@@ -365,47 +365,43 @@ void esborra(Trama trama){
  *********************************************************************************************************/
 
 void vengut(Trama trama){
-    char *sAux, sText[100];
+    char sAux[100], sText[100], sTicker[10];
+    int numAccions = 0;
     int i, j;
     float preu;
     
     //Rebo ticker-naccions-preu
-    sAux = (char*)malloc(sizeof(char));
     i = 0;
     while (trama.Data[i] != '-') {
         sAux[i] = trama.Data[i];
         i++;
-        sAux = (char*)realloc(sAux, sizeof(char) * (i+1));
     }
     sAux[i] = '\0';
-    sprintf(sText, "\n\n[GEKKO]: Venta realitzada. %s ", sAux);
+    strcpy(sTicker, sAux);
     i++;
     j = 0;
     while (trama.Data[i] != '-') {
         sAux[j] = trama.Data[i];
         i++;
         j++;
-        sAux = (char*)realloc(sAux, sizeof(char) * (j+1));
     }
     sAux[j] = '\0';
-    strcat(sText, sAux);
-    strcat(sText, " accions. ");
+    numAccions = atoi(sAux);
     i++;
     j = 0;
     while (trama.Data[i] != '\0') {
         sAux[j] = trama.Data[i];
         i++;
         j++;
-        sAux = (char*)realloc(sAux, sizeof(char) * (j+1));
     }
     sAux[j] = '\0';
-    strcat(sText, sAux);
-    strcat(sText, "€.\n\n");
-    //Actualitzem preu
     preu = atof(sAux);
+    //Mostrem missatge per pantalla
+    bzero(sText, sizeof(sText));
+    sprintf(sText, "\n\n[GEKKO]: Venta realitzada. %s %d accions. %f €.\n\n", sTicker, numAccions, preu);
+    write(1, sText, strlen(sText));
+    //Actualitzem preu
     stOperador.fDinersTotals = stOperador.fDinersTotals + preu;
-    write(1, sText, sizeof(sText));
-    free(sAux);
 }
 
 /*********************************************************************************************************
@@ -449,9 +445,9 @@ void* escoltaGekko(void * data){
                 break;
             case 'M':
                 //Accions comprades per unaltre operador
-                sem_wait(&mutex);
+                //sem_wait(&mutex);
                 vengut(trama);
-                sem_post(&mutex);
+                //sem_post(&mutex);
                 break;
             case 'D':
                 //Quan s'esborra una venta
@@ -501,9 +497,9 @@ int main() {
     pthread_create(&thread_id, NULL, escoltaGekko, (void *)sockGekko);
     
     while(sortir == 0){
-        sem_wait(&mutex);
+        //sem_wait(&mutex);
         Shell_analitzaComanda(&sortir, &stOperador, sockGekko, &semafor);
-        sem_post(&mutex);
+        //sem_post(&mutex);
     }
     pthread_cancel(thread_id);
     desconnexio();
