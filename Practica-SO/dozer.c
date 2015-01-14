@@ -19,7 +19,6 @@ IpInfo stIP;
 int sockGekko;
 struct sockaddr_in servGekko;
 sem_t semafor;
-sem_t mutex;
 pthread_t thread_id;
 
 int connexio();
@@ -41,7 +40,6 @@ void kctrlc(){
     Fitxer_guardaFitxerStock(&stOperador);
     LlistaPDIAccio_destrueix(&stOperador.llistaAccions);
     sem_destroy(&semafor);
-    sem_destroy(&mutex);
     exit(0);
 }
 
@@ -227,7 +225,7 @@ void buy(Trama trama){
         }
         LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
         bzero(sText, sizeof(sText));
-        sprintf(sText, "Compra realitzada. Cost: %.2f\n", preu);
+        sprintf(sText, "Compra realitzada. Cost: %.2f €\n", preu);
         write(1, sText, strlen(sText));
         free(sAux);
     }
@@ -428,12 +426,13 @@ void vengut(Trama trama){
  *********************************************************************************************************/
 
 void* escoltaGekko(void * data){
-    int sortir = 0;
+    int* sortir;
     Trama trama;
     int nContador = 0;
+    sortir = (int*)data;
     
-    while (!sortir) {
-        if(read((int) data, &trama, sizeof(trama)) > 0){
+    while ((*sortir) == 0) {
+        if(read(sockGekko, &trama, sizeof(trama)) != 0){
             
             switch (trama.Tipus) {
                 case 'X':
@@ -457,9 +456,7 @@ void* escoltaGekko(void * data){
                     break;
                 case 'M':
                     //Accions comprades per unaltre operador
-                    //sem_wait(&mutex);
                     vengut(trama);
-                    //sem_post(&mutex);
                     break;
                 case 'D':
                     //Quan s'esborra una venta
@@ -471,18 +468,18 @@ void* escoltaGekko(void * data){
                     break;
             }
         }else{
-            sortir = 1;
-            raise(SIGINT);
+            *sortir = 1;
+            //signal perque no es quedi bloquejat.
+            sem_post(&semafor);
         }
     }
     return NULL;
 }
 
 int main() {
-    int file_stock, file_config, sortir = 0;
+    int file_stock, file_config, sortir = 0, sortir2 = 0;
     //Inicialitzem el semafor pel thread que escoltara les trames del Gekko
     sem_init(&semafor, 0, 0);
-    sem_init(&mutex, 0, 1);
     
     stOperador.llistaAccions = LlistaPDIAccio_crea();
     signal(SIGINT, ksighandler);
@@ -510,19 +507,22 @@ int main() {
     pthread_attr_t attr;
     
     pthread_attr_init(&attr);
-    pthread_create(&thread_id, NULL, escoltaGekko, (void *)sockGekko);
+    pthread_create(&thread_id, NULL, escoltaGekko, (void *)&sortir);
     
-    while(sortir == 0){
-        //sem_wait(&mutex);
-        Shell_analitzaComanda(&sortir, &stOperador, sockGekko, &semafor);
-        //sem_post(&mutex);
+    while(sortir2 == 0 && sortir == 0){
+        Shell_analitzaComanda(&sortir2, &stOperador, sockGekko, &semafor);
     }
-    pthread_cancel(thread_id);
+    if (sortir2 != 0) {
+        pthread_cancel(thread_id);
+    }else{
+        pthread_join(thread_id, NULL);
+        write(1, "El gekko ha mort\n", strlen("El gekko ha mort\n"));
+        write(1, "\nSayonara\n", strlen("\nSayonara\n"));
+    }
     desconnexio();
     Fitxer_guardaFitxerStock(&stOperador);
     LlistaPDIAccio_destrueix(&stOperador.llistaAccions);
     sem_destroy(&semafor);
-    sem_destroy(&mutex);
 	return 0;
 }
 
