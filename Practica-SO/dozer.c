@@ -203,7 +203,7 @@ void buy(Trama trama){
                 trobat = 1;
                 break;
             }
-            LlistaPDIAccio_avanca(&stOperador.llistaAccions);
+            if(!trobat) LlistaPDIAccio_avanca(&stOperador.llistaAccions);
         }
         strcpy(a.cTicker,sAux);
         j = 0;
@@ -301,7 +301,7 @@ void sell(Trama trama){
 void esborra(Trama trama){
     char sText[100];
     char *sAux;
-    int i, j, nAccions, trobat;
+    int i, j, nAccions, trobat = 0;
     Accio a;
     
     if (trama.Data[0] == 'E') {
@@ -335,9 +335,12 @@ void esborra(Trama trama){
             a = LlistaPDIAccio_consulta(stOperador.llistaAccions);
             if(!strcasecmp(a.cTicker,sAux)){
                 trobat = 1;
+            }
+            if(!trobat){
+                LlistaPDIAccio_avanca(&stOperador.llistaAccions);
+            }else{
                 break;
             }
-            LlistaPDIAccio_avanca(&stOperador.llistaAccions);
         }
         strcpy(a.cTicker,sAux);
         if(!trobat){
