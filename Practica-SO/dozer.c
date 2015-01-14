@@ -333,7 +333,7 @@ void esborra(Trama trama){
         LlistaPDIAccio_vesInici(&stOperador.llistaAccions);
         while (!LlistaPDIAccio_fi(stOperador.llistaAccions)) {
             a = LlistaPDIAccio_consulta(stOperador.llistaAccions);
-            if(!strcmp(a.cTicker,sAux)){
+            if(!strcasecmp(a.cTicker,sAux)){
                 trobat = 1;
                 break;
             }
