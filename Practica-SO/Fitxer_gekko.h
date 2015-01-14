@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "Tipus_gekko.h"
+#include "LlistaPDIVenta.h"
 
 void Fitxer_carregaFitxerConfig(int file_config, IpInfo* stIP);
 void Fitxer_carregaFitxerIbex(int file_ibex, Accio ibex[35], InfoVentes ventes[35]);

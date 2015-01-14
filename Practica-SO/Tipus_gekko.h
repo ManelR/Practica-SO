@@ -20,7 +20,6 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <pthread.h>
-#include "LlistaPDIVenta.h"
 
 typedef struct{
     int nSegons;
@@ -34,11 +33,6 @@ typedef struct{
     float fPreu;
     long long llAccions;
 }Accio;
-
-typedef struct{
-    char sNom[6];
-    LlistaPDIVenta llista;
-}InfoVentes;
 
 typedef struct{
     char Origen[14];

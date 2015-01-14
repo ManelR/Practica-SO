@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include "Tipus_gekko.h"
 #include "Fitxer_gekko.h"
+#include "LlistaPDIDozer.h"
+#include "LlistaPDIVenta.h"
 
 #define SORIGEN 14
 #define SDADES 100
@@ -16,6 +18,8 @@
 
 Accio ibex[35];
 InfoVentes ventes[35];
+LlistaPDIDozer Dozers;
+LlistaPDIDozer Pendents;
 IpInfo stIP;
 int sockTumb, nPeticio = 0;
 static int nLecturesIbex = 0; //Variable per controlar les lectures i escriptura del ibex.
@@ -28,6 +32,12 @@ static pthread_mutex_t mutex_escriptor = PTHREAD_MUTEX_INITIALIZER;
 
 //Mutex per controlar la lectura i escriptura de les ventes. (Només un ja que al estar dins una llista es modifica constantment).
 static pthread_mutex_t mutex_ventes = PTHREAD_MUTEX_INITIALIZER;
+
+//Mutex per controlar la lectura i escriptura dels dozers. (Només un ja que al estar dins una llista es modifica constantment).
+static pthread_mutex_t mutex_dozers = PTHREAD_MUTEX_INITIALIZER;
+
+//Mutex per controlar la lectura i escriptura dels pendents. (Només un ja que al estar dins una llista es modifica constantment).
+static pthread_mutex_t mutex_pendents = PTHREAD_MUTEX_INITIALIZER;
 
 //Funcions definides
 void actualitzarInformacio();
@@ -100,9 +110,19 @@ void kctrlc(){
     }
     pthread_mutex_unlock(&mutex_ventes);
     
+    pthread_mutex_lock(&mutex_dozers);
+    LlistaPDIDozer_destrueix(&Dozers);
+    pthread_mutex_unlock(&mutex_dozers);
+    
+    pthread_mutex_lock(&mutex_pendents);
+    LlistaPDIDozer_destrueix(&Pendents);
+    pthread_mutex_unlock(&mutex_pendents);
+    
     pthread_mutex_destroy(&mutex_escriptor);
     pthread_mutex_destroy(&mutex_lectors);
     pthread_mutex_destroy(&mutex_ventes);
+    pthread_mutex_destroy(&mutex_pendents);
+    pthread_mutex_destroy(&mutex_dozers);
     desconnexio();
     exit(0);
 }
@@ -372,8 +392,11 @@ void showIbex(int fdDozer){
  *
  *********************************************************************************************************/
 
-void sendToDozerBuy(int fdDozer, char* sNom, int nNumAccions, float fDiners){
+void sendToDozerBuy(char sOperador[14], char* sNom, int nNumAccions, float fDiners){
     Trama trama;
+    int trobat = 0;
+    Dozer auxDozer;
+    int fdDozer = 0;
     char sMissatge[100];
     
     strcpy(trama.Origen, "Gekko");
@@ -381,7 +404,30 @@ void sendToDozerBuy(int fdDozer, char* sNom, int nNumAccions, float fDiners){
     bzero(sMissatge, sizeof(sMissatge));
     sprintf(sMissatge, "%s-%d-%f", sNom, nNumAccions, fDiners);
     strcpy(trama.Data, sMissatge);
-    write(fdDozer, &trama, sizeof(trama));
+    
+    //Comprovar si s'envia o es guarda
+    pthread_mutex_lock(&mutex_dozers);
+    LlistaPDIDozer_vesInici(&Dozers);
+    while (!LlistaPDIDozer_fi(Dozers) && trobat == 0) {
+        auxDozer = LlistaPDIDozer_consulta(Dozers);
+        if (!strcmp(auxDozer.sOperador, sOperador)) {
+            trobat = 1;
+            fdDozer = auxDozer.nSocket;
+        }
+        LlistaPDIDozer_avanca(&Dozers);
+    }
+    pthread_mutex_unlock(&mutex_dozers);
+    if (trobat == 1) {
+        write(fdDozer, &trama, sizeof(trama));
+    }else{
+        auxDozer.trama = trama;
+        strcpy(auxDozer.sOperador, sOperador);
+        auxDozer.nSocket = 1;
+        pthread_mutex_lock(&mutex_pendents);
+        LlistaPDIDozer_insereix(&Pendents, auxDozer);
+        pthread_mutex_unlock(&mutex_pendents);
+    }
+    
 }
 
 /*********************************************************************************************************
@@ -487,7 +533,7 @@ void buy(int fdDozer, Trama trama){
                         //Hi ha les accions necessaries
                         LlistaPDIVenta_esborra(&ventes[j].llista);
                         //Enviar al Dozer que té les accions en venta
-                        sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, auxNumAccions, ibex[j].fPreu * auxNumAccions);
+                        sendToDozerBuy(auxVenta.sOperador, ibex[j].cTicker, auxNumAccions, ibex[j].fPreu * auxNumAccions);
                         sortirAccions = 1;
                     }else if (auxVenta.nNumAccions > auxNumAccions){
                         //Es pot comprar pero cal modificar la llista
@@ -495,13 +541,13 @@ void buy(int fdDozer, Trama trama){
                         LlistaPDIVenta_esborra(&ventes[j].llista);
                         LlistaPDIVenta_insereix(&ventes[j].llista, auxVenta);
                         //Enviar al Dozer que té les accions en venta
-                        sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, auxNumAccions, ibex[j].fPreu * auxNumAccions);
+                        sendToDozerBuy(auxVenta.sOperador, ibex[j].cTicker, auxNumAccions, ibex[j].fPreu * auxNumAccions);
                         sortirAccions = 1;
                     }else if (auxVenta.nNumAccions < auxNumAccions){
                         //Es pot comprar d'aqui pero cal avançar
                         LlistaPDIVenta_esborra(&ventes[j].llista);
                         //Enviar al Dozer que té les accions en venta
-                        sendToDozerBuy(auxVenta.nSocket, ibex[j].cTicker, auxVenta.nNumAccions, ibex[j].fPreu * auxVenta.nNumAccions);
+                        sendToDozerBuy(auxVenta.sOperador, ibex[j].cTicker, auxVenta.nNumAccions, ibex[j].fPreu * auxVenta.nNumAccions);
                         //Decrementar el numero d'accions que encara s'han de comprar
                         auxNumAccions = auxNumAccions - auxVenta.nNumAccions;
                     }
@@ -574,7 +620,7 @@ void sell(int fdDozer, Trama trama){
     
     if (trobat == 1) {
         sprintf(tramaEnviar.Data, "%d-%s", numAccions, sTicker);
-        for (i = strlen(tramaEnviar.Data); i < SDADES; i++) {
+        for (i = (int)strlen(tramaEnviar.Data); i < SDADES; i++) {
             tramaEnviar.Data[i] = '\0';
         }
         //Guardar la venta
@@ -584,12 +630,11 @@ void sell(int fdDozer, Trama trama){
             LlistaPDIVenta_avanca(&ventes[nPosicio].llista);
         }
         auxVenta.nNumAccions = numAccions;
-        auxVenta.nSocket = fdDozer;
         strcpy(auxVenta.sOperador, trama.Origen);
         LlistaPDIVenta_insereix(&ventes[nPosicio].llista, auxVenta);
         pthread_mutex_unlock(&mutex_ventes);
     }else{
-        strcpy(tramaEnviar.Data, "Error amb la venta.");
+        strcpy(tramaEnviar.Data, "Error amb la venta. Les accions no estan dins l'IBEX");
     }
     //Enviar
     write(fdDozer, &tramaEnviar, sizeof(tramaEnviar));
@@ -727,61 +772,121 @@ void esborra(int fdDozer, Trama trama){
 
 void* dozer(void * data){
     Trama trama;
+    Trama tramaEnviar;
+    Dozer auxDozer;
     int sortir = 0;
+    int trobat = 0;
     char sFrase[50];
     char sOperador[14];
+    int fdDozer = 0;
     
-    if(read((int) data, &trama, sizeof(trama)) < 0){
+    fdDozer = (int)data;
+    if(read(fdDozer, &trama, sizeof(trama)) < 0){
         perror("ERROR reading from socket");
         return NULL;
     }else{
         if(trama.Tipus == 'C' && strcmp("CONNEXIO", trama.Data) == 0){
             strcpy(sOperador,trama.Origen);
-            trama.Tipus = 'O';
-            strcpy(trama.Data, "CONNEXIO OK");
-            strcpy(trama.Origen, "Gekko");
-            write((int) data, &trama, sizeof(trama));
+            //Comprovar que no existeixi
+            pthread_mutex_lock(&mutex_dozers);
+            LlistaPDIDozer_vesInici(&Dozers);
+            while (!LlistaPDIDozer_fi(Dozers) && trobat == 0) {
+                auxDozer = LlistaPDIDozer_consulta(Dozers);
+                if (!strcmp(auxDozer.sOperador, sOperador)) {
+                    strcpy(tramaEnviar.Data, "ERROR");
+                    tramaEnviar.Tipus = 'E';
+                    trobat = 1;
+                }
+                LlistaPDIDozer_avanca(&Dozers);
+            }
+            pthread_mutex_unlock(&mutex_dozers);
+            if (trobat == 0) {
+                //No hi ha cap operador amb aquest nom
+                strcpy(tramaEnviar.Data, "CONNEXIO OK");
+                tramaEnviar.Tipus = 'O';
+                //Afegir a la llista de dozers
+                auxDozer.nSocket = fdDozer;
+                strcpy(auxDozer.sOperador, sOperador);
+                pthread_mutex_lock(&mutex_dozers);
+                LlistaPDIDozer_insereix(&Dozers, auxDozer);
+                pthread_mutex_unlock(&mutex_dozers);
+            }
+            strcpy(tramaEnviar.Origen, "Gekko");
+
         }else{
-            trama.Tipus = 'E';
-            strcpy(trama.Data, "ERROR");
-            strcpy(trama.Origen, "Gekko");
+            tramaEnviar.Tipus = 'E';
+            strcpy(tramaEnviar.Data, "ERROR");
+            strcpy(tramaEnviar.Origen, "Gekko");
         }
+        write(fdDozer, &tramaEnviar, sizeof(tramaEnviar));
     }
-    while (!sortir) {
-        if(read((int) data, &trama, sizeof(trama)) < 0){
-            perror("ERROR reading from socket");
-            return NULL;
-        }else{
-            //S'ha llegit la trama
-            switch (trama.Tipus) {
-                case 'Q':
-                    sortir = 1;
-                    break;
-                case 'X':
-                    //Show IBEX
-                    showIbex((int)data);
-                    break;
-                case 'B':
-                    //BUY
-                    buy((int)data, trama);
-                    break;
-                case 'S':
-                    //SELL
-                    sell((int)data, trama);
-                    break;
-                case 'D':
-                    //Esborrar
-                    esborra((int)data, trama);
-                    break;
-                default:
-                    break;
+    if (tramaEnviar.Tipus != 'E') {
+        //Comprovar si hi ha trames pendents
+        pthread_mutex_lock(&mutex_pendents);
+        LlistaPDIDozer_vesInici(&Pendents);
+        while (!LlistaPDIDozer_fi(Pendents)) {
+            auxDozer = LlistaPDIDozer_consulta(Pendents);
+            if (!strcmp(auxDozer.sOperador, sOperador)) {
+                //Toca enviar la trama
+                write(fdDozer, &auxDozer.trama, sizeof(auxDozer.trama));
+                LlistaPDIDozer_esborra(&Pendents);
+            }else{
+                LlistaPDIDozer_avanca(&Pendents);
             }
         }
+        pthread_mutex_unlock(&mutex_pendents);
+        while (!sortir) {
+            if(read(fdDozer, &trama, sizeof(trama)) < 0){
+                perror("ERROR reading from socket");
+                return NULL;
+            }else{
+                //S'ha llegit la trama
+                switch (trama.Tipus) {
+                    case 'Q':
+                        sortir = 1;
+                        break;
+                    case 'X':
+                        //Show IBEX
+                        showIbex(fdDozer);
+                        break;
+                    case 'B':
+                        //BUY
+                        buy(fdDozer, trama);
+                        break;
+                    case 'S':
+                        //SELL
+                        sell(fdDozer, trama);
+                        break;
+                    case 'D':
+                        //Esborrar
+                        esborra(fdDozer, trama);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        //Buscar el Dozer a la llista i esborrar-lo
+        trobat = 0;
+        pthread_mutex_lock(&mutex_dozers);
+        LlistaPDIDozer_vesInici(&Dozers);
+        while (!LlistaPDIDozer_fi(Dozers) && trobat == 0) {
+            auxDozer = LlistaPDIDozer_consulta(Dozers);
+            if (!strcmp(auxDozer.sOperador, sOperador)) {
+                trobat = 1;
+                LlistaPDIDozer_esborra(&Dozers);
+            }else{
+                LlistaPDIDozer_avanca(&Dozers);
+            }
+        }
+        pthread_mutex_unlock(&mutex_dozers);
+        //Mostrar per pantalla que s'ha desconnectat
+        bzero(sFrase, sizeof(sFrase));
+        sprintf(sFrase, "%s desconnectat\n", sOperador);
+        write(1, sFrase, strlen(sFrase));
+        
     }
-    close((int) data);
-    bzero(sFrase, sizeof(sFrase));
-    sprintf(sFrase, "%s desconnectat\n", sOperador);
-    write(1, sFrase, strlen(sFrase));
+    close(fdDozer);
     return NULL;
 }
 
@@ -867,6 +972,14 @@ int main() {
         ventes[i].llista = LlistaPDIVenta_crea();
     }
     pthread_mutex_unlock(&mutex_ventes);
+    
+    pthread_mutex_lock(&mutex_dozers);
+    Dozers = LlistaPDIDozer_crea();
+    pthread_mutex_unlock(&mutex_dozers);
+    
+    pthread_mutex_lock(&mutex_pendents);
+    Pendents = LlistaPDIDozer_crea();
+    pthread_mutex_unlock(&mutex_pendents);
     
     file_config = open("config_tumblingdice.dat", O_RDONLY);
     if (file_config < 0) {

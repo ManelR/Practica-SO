@@ -9,10 +9,11 @@
 #ifndef LlistaPDIVenta_h
 #define LlistaPDIVenta_h
 
+#include "Tipus_gekko.h"
+
 typedef struct{
     char sOperador[14];
     int nNumAccions;
-    int nSocket;
 }Venta;
 
 typedef struct n3{
@@ -24,6 +25,11 @@ typedef struct{
     Nodev * pstCap;
     Nodev * pstAnt;
 }LlistaPDIVenta;
+
+typedef struct{
+    char sNom[6];
+    LlistaPDIVenta llista;
+}InfoVentes;
 
 LlistaPDIVenta LlistaPDIVenta_crea();
 void LlistaPDIVenta_insereix(LlistaPDIVenta * l, Venta a);

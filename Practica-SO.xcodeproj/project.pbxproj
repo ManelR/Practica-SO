@@ -15,6 +15,7 @@
 		3B48D1861A3CBDC1008CD872 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D1801A3CBDC1008CD872 /* makefile */; };
 		3B48D18E1A3CC07D008CD872 /* gekko.c in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D1871A3CC07D008CD872 /* gekko.c */; };
 		3B48D18F1A3CC07D008CD872 /* Fitxer_gekko.c in Sources */ = {isa = PBXBuildFile; fileRef = 3B48D18C1A3CC07D008CD872 /* Fitxer_gekko.c */; };
+		3B9C139C1A66CF2500C322D4 /* LlistaPDIDozer.c in Sources */ = {isa = PBXBuildFile; fileRef = 3B9C139A1A66CF2500C322D4 /* LlistaPDIDozer.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,6 +52,8 @@
 		3B48D18B1A3CC07D008CD872 /* Fitxer_gekko.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Fitxer_gekko.h; sourceTree = "<group>"; };
 		3B48D18C1A3CC07D008CD872 /* Fitxer_gekko.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Fitxer_gekko.c; sourceTree = "<group>"; };
 		3B48D18D1A3CC07D008CD872 /* ibex.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ibex.dat; sourceTree = "<group>"; };
+		3B9C139A1A66CF2500C322D4 /* LlistaPDIDozer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LlistaPDIDozer.c; sourceTree = "<group>"; };
+		3B9C139B1A66CF2500C322D4 /* LlistaPDIDozer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LlistaPDIDozer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +96,8 @@
 		3B48D1751A3CBD55008CD872 /* Gekko */ = {
 			isa = PBXGroup;
 			children = (
+				3B9C139A1A66CF2500C322D4 /* LlistaPDIDozer.c */,
+				3B9C139B1A66CF2500C322D4 /* LlistaPDIDozer.h */,
 				3B27ECA61A5AE89F004FB158 /* LlistaPDIVenta.c */,
 				3B27ECA71A5AE89F004FB158 /* LlistaPDIVenta.h */,
 				3B48D1871A3CC07D008CD872 /* gekko.c */,
@@ -179,6 +184,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B9C139C1A66CF2500C322D4 /* LlistaPDIDozer.c in Sources */,
 				3B48D1831A3CBDC1008CD872 /* Shell.c in Sources */,
 				3B48D18F1A3CC07D008CD872 /* Fitxer_gekko.c in Sources */,
 				3B48D1821A3CBDC1008CD872 /* dozer.c in Sources */,

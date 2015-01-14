@@ -1,16 +1,16 @@
 //
-//  LlistaPDIVenta.c
+//  LlistaPDIDozer.c
 //
 //
 //  Created by Manel Roca & Guillermo Martínez-Ubierna on 2/11/14.
 //  Copyright (c) 2014 Guille Martínez-Ubierna i Manel Roca. All rights reserved.
 //
 
-#include "LlistaPDIVenta.h"
+#include "LlistaPDIDozer.h"
 
-LlistaPDIVenta LlistaPDIVenta_crea(){
-    LlistaPDIVenta stLlista;
-    stLlista.pstCap = (Nodev *)malloc(sizeof(Nodev));
+LlistaPDIDozer LlistaPDIDozer_crea(){
+    LlistaPDIDozer stLlista;
+    stLlista.pstCap = (Noded *)malloc(sizeof(Noded));
     if (stLlista.pstCap == NULL) {
         write(1, "Error al crear la llista!\n", strlen("Error al crear la llista!\n"));
     }else{
@@ -20,20 +20,21 @@ LlistaPDIVenta LlistaPDIVenta_crea(){
     return stLlista;
 }
 
-void LlistaPDIVenta_insereix(LlistaPDIVenta * l, Venta v){
-    Nodev * aux;
+void LlistaPDIDozer_insereix(LlistaPDIDozer * l, Dozer v){
+    Noded * aux;
     l->pstAnt = l->pstCap;
     //Anar al final
     while (l->pstAnt->pstSeg != NULL) {
         l->pstAnt = l->pstAnt->pstSeg;
     }
     //inserir
-    aux = (Nodev*)malloc(sizeof(Nodev));
+    aux = (Noded*)malloc(sizeof(Noded));
     if (aux == NULL) {
          write(1, "Error al inserir!\n", strlen("Error al inserir!\n"));
     }else{
-        aux->v.nNumAccions = v.nNumAccions;
-        strcpy(aux->v.sOperador, v.sOperador);
+        aux->d.nSocket = v.nSocket;
+        aux->d.trama = v.trama;
+        strcpy(aux->d.sOperador, v.sOperador);
         aux->pstSeg = l->pstAnt->pstSeg;
         l->pstAnt->pstSeg = aux;
         l->pstAnt = aux;
@@ -41,18 +42,19 @@ void LlistaPDIVenta_insereix(LlistaPDIVenta * l, Venta v){
     
 }
 
-Venta LlistaPDIVenta_consulta(LlistaPDIVenta l){
-    Venta v;
-    v.nNumAccions = -1;
+Dozer LlistaPDIDozer_consulta(LlistaPDIDozer l){
+    Dozer v;
+    v.nSocket = -1;
     if (l.pstAnt->pstSeg != NULL) {
-        v.nNumAccions = l.pstAnt->pstSeg->v.nNumAccions;
-        strcpy(v.sOperador, l.pstAnt->pstSeg->v.sOperador);
+        v.trama = l.pstAnt->pstSeg->d.trama;
+        v.nSocket = l.pstAnt->pstSeg->d.nSocket;
+        strcpy(v.sOperador, l.pstAnt->pstSeg->d.sOperador);
     }
     return v;
 }
 
-void LlistaPDIVenta_esborra(LlistaPDIVenta * l){
-    Nodev * aux;
+void LlistaPDIDozer_esborra(LlistaPDIDozer * l){
+    Noded * aux;
     if(l->pstAnt->pstSeg == NULL){
         write(1,"Error al esborrar!\n",strlen("Error al esborrar!\n"));
     }else{
@@ -62,27 +64,27 @@ void LlistaPDIVenta_esborra(LlistaPDIVenta * l){
     }
 }
 
-void LlistaPDIVenta_avanca(LlistaPDIVenta * l){
+void LlistaPDIDozer_avanca(LlistaPDIDozer * l){
     if (l->pstAnt->pstSeg == NULL) {
         write(1,"No es pot avançar!\n",strlen("No es pot avançar!\n"));
     }else{
         l->pstAnt = l->pstAnt->pstSeg;
     }
 }
-void LlistaPDIVenta_vesInici(LlistaPDIVenta * l){
+void LlistaPDIDozer_vesInici(LlistaPDIDozer * l){
     l->pstAnt = l->pstCap;
 }
 
-int LlistaPDIVenta_fi(LlistaPDIVenta l){
+int LlistaPDIDozer_fi(LlistaPDIDozer l){
     return l.pstAnt->pstSeg == NULL;
 }
 
-int LlistaPDIVenta_buida(LlistaPDIVenta l){
+int LlistaPDIDozer_buida(LlistaPDIDozer l){
     return l.pstCap->pstSeg == NULL;
 }
 
-void LlistaPDIVenta_destrueix(LlistaPDIVenta * l){
-    Nodev * aux;
+void LlistaPDIDozer_destrueix(LlistaPDIDozer * l){
+    Noded * aux;
     while (l->pstCap != NULL) {
         aux = l->pstCap;
         l->pstCap = l->pstCap->pstSeg;
