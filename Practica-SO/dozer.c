@@ -199,7 +199,7 @@ void buy(Trama trama){
         LlistaPDIAccio_vesInici(&stOperador.llistaAccions);
         while (!LlistaPDIAccio_fi(stOperador.llistaAccions)) {
             a = LlistaPDIAccio_consulta(stOperador.llistaAccions);
-            if(!strcmp(a.cTicker,sAux)){
+            if(!strcasecmp(a.cTicker,sAux)){
                 trobat = 1;
                 break;
             }
@@ -214,6 +214,9 @@ void buy(Trama trama){
             sAux = (char*)realloc(sAux, sizeof(char) * (j+1));
         }
         sAux[j] = '\0';
+        for(i = 0; i < (int) strlen(a.cTicker);i++) {
+            if ((a.cTicker[i] >= 'a' ) && (a.cTicker[i] <= 'z')) a.cTicker[i] -= ('a'-'A');
+        }
         if(!trobat){
             //afegir a la llista
             a.nAccions = atoi(sAux);
@@ -271,6 +274,9 @@ void sell(Trama trama){
             sAux = (char*)realloc(sAux, sizeof(char) * (j+1));
         }
         sAux[j] = '\0';
+        for(i = 0; i < (int) strlen(a.cTicker);i++) {
+            if ((a.cTicker[i] >= 'a' ) && (a.cTicker[i] <= 'z')) a.cTicker[i] -= ('a'-'A');
+        }
         //Buscar ticker a la llista
         LlistaPDIAccio_vesInici(&stOperador.llistaAccions);
         while (!LlistaPDIAccio_fi(stOperador.llistaAccions)) {
@@ -278,7 +284,7 @@ void sell(Trama trama){
             if(!strcasecmp(a.cTicker,sAux)){
                 LlistaPDIAccio_esborra(&stOperador.llistaAccions);
                 a.nAccions = a.nAccions - nAccions;
-                LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
+                if(a.nAccions != 0) LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
                 break;
             }
             LlistaPDIAccio_avanca(&stOperador.llistaAccions);
@@ -343,6 +349,9 @@ void esborra(Trama trama){
             }
         }
         strcpy(a.cTicker,sAux);
+        for(i = 0; i < (int) strlen(a.cTicker);i++) {
+            if ((a.cTicker[i] >= 'a' ) && (a.cTicker[i] <= 'z')) a.cTicker[i] -= ('a'-'A');
+        }
         if(!trobat){
             //afegir a la llista
             a.nAccions = nAccions;
@@ -401,7 +410,7 @@ void vengut(Trama trama){
     preu = atof(sAux);
     //Mostrem missatge per pantalla
     bzero(sText, sizeof(sText));
-    sprintf(sText, "\n\n[GEKKO]: Venta realitzada. %s %d accions. %f €.\n\n", sTicker, numAccions, preu);
+    sprintf(sText, "\n\n[GEKKO]: Venta realitzada. %s %d accions. %.2f €.\n\n", sTicker, numAccions, preu);
     write(1, sText, strlen(sText));
     //Actualitzem preu
     stOperador.fDinersTotals = stOperador.fDinersTotals + preu;
