@@ -21,7 +21,7 @@
 void Fitxer_actualitzaXML(AccioXML ibex[35]){
     int file_xml, i = 0, nActualitzaFitxer = 0;
     char cAux;
-    char *sAux, sText[100];
+    char *sAux = NULL, sText[100];
     
     //Creacio del fitxer xml
     file_xml = open("stocks.xml", O_RDWR | O_CREAT, 0666);
@@ -81,23 +81,20 @@ void Fitxer_actualitzaXML(AccioXML ibex[35]){
                 strcat(sAux, "\t\t</ticker>\n");
             }
             strcat(sAux, "\t</period_summary>\n</stock>");
-            nActualitzaFitxer = 1;
+            close(file_xml);
+            file_xml = open("stocks.xml", O_TRUNC | O_WRONLY, 0666);
+            if (file_xml < 0) {
+                write(1, "Error al crear el fichero xml.\n", strlen("Error al crear el fichero xml.\n"));
+            }else{
+                i = 0;
+                while (sAux[i] != '\0') {
+                    write(file_xml, &sAux[i], 1);
+                    i++;
+                }
+            }
+            free(sAux);
         }
         close(file_xml);
-    }
-    if(nActualitzaFitxer == 1){
-        file_xml = open("stocks.xml", O_TRUNC | O_WRONLY, 0666);
-        if (file_xml < 0) {
-            write(1, "Error al crear el fichero xml.\n", strlen("Error al crear el fichero xml.\n"));
-        }else{
-            i = 0;
-            while (sAux[i] != '\0') {
-                write(file_xml, &sAux[i], 1);
-                i++;
-            }
-            close(file_xml);
-        }
-        free(sAux);
     }
 }
 

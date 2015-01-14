@@ -119,8 +119,8 @@ void kctrlc(){
         close(d.nSocket);
         LlistaPDIDozer_avanca(&Dozers);
     }
-    
     pthread_mutex_unlock(&mutex_dozers);
+    
     pthread_mutex_lock(&mutex_dozers);
     LlistaPDIDozer_destrueix(&Dozers);
     pthread_mutex_unlock(&mutex_dozers);
