@@ -32,7 +32,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
     //Mostar la shell
     bzero(sText, sizeof(sText));
     sprintf(sText, "%s>", stOperador->cNom);
-    write(1, sText, sizeof(sText));
+    write(1, sText, strlen(sText));
     
     //Llegir la comanda
     sComanda = (char*)malloc(sizeof(char));
@@ -56,12 +56,12 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
     
     //Analitza Comanda
     if (!strcmp("exit", sComanda)) {
-        write(1, "\nSayonara\n", sizeof("\nSayonara\n"));
+        write(1, "\nSayonara\n", strlen("\nSayonara\n"));
         *sortir = 1;
     }else if(!strcmp("show me the money", sComanda)){
         bzero(sText, sizeof(sText));
         sprintf(sText, "\n%.2f€\n\n", stOperador->fDinersTotals);
-        write(1, sText, sizeof(sText));
+        write(1, sText, strlen(sText));
     }else if(!strcmp("show stock", sComanda)){
         LlistaPDIAccio_vesInici(&stOperador->llistaAccions);
         write(1, "\n", sizeof("\n"));
@@ -69,7 +69,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
             a = LlistaPDIAccio_consulta(stOperador->llistaAccions);
             bzero(sText, sizeof(sText));
             sprintf(sText, "%s-%d\n",a.cTicker, a.nAccions);
-            write(1, sText, sizeof(sText));
+            write(1, sText, strlen(sText));
             LlistaPDIAccio_avanca(&stOperador->llistaAccions);
         }
         write(1, "\n", sizeof("\n"));
@@ -101,7 +101,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
         sAccio[j] = '\0';
         
         if(sComanda[i] == '\0'){
-            write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+            write(1, "\nComanda incorrecta\n\n", strlen("\nComanda incorrecta\n\n"));
         }else{
             i++;
             j = 0;
@@ -115,7 +115,7 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
             sTicker[j] = '\0';
             
             if(sComanda[i] == '\0'){
-                write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+                write(1, "\nComanda incorrecta\n\n", strlen("\nComanda incorrecta\n\n"));
             }else{
                 i++;
                 j = 0;
@@ -165,15 +165,15 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
                                     //wait del thread
                                     sem_wait(semafor);
                                 }else{
-                                    write(1, "\nComanda incorrecta, tens masses diners per enviar la trama al Gekko.\n\n", sizeof("\nComanda incorrecta, tens masses diners per enviar la trama al Gekko.\n\n"));
+                                    write(1, "\nComanda incorrecta, tens masses diners per enviar la trama al Gekko.\n\n", strlen("\nComanda incorrecta, tens masses diners per enviar la trama al Gekko.\n\n"));
                                 }
                             }else if(sNombreAccions[i] != '\0'){
-                                write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", strlen("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
                             }else{
-                                write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n"));
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n", strlen("\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n"));
                             }
                         }else{
-                            write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
+                            write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", strlen("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
                         }
                     }else if (!strcmp(sAccio, "sell")){
                         //sell
@@ -212,20 +212,20 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
                                             //Lock del thread
                                             sem_wait(semafor);
                                         }else{
-                                            write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions igual o menor a les existents.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre d'accions igual o menor a les existents.\n\n"));
+                                            write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions igual o menor a les existents.\n\n", strlen("\nComanda incorrecta, has d'entrar un nombre d'accions igual o menor a les existents.\n\n"));
                                         }
                                         trobat = 1;
                                     }
                                     LlistaPDIAccio_avanca(&stOperador->llistaAccions);
                                 }
-                                if(!trobat) write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
+                                if(!trobat) write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", strlen("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
                             }else if(sNombreAccions[i] != '\0'){
-                                write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", strlen("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
                             }else{
-                                write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n"));
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n", strlen("\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n"));
                             }
                         }else{
-                            write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
+                            write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", strlen("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
                         }
                     }else if (!strcmp(sAccio, "erase")) {
                         //erase
@@ -256,18 +256,18 @@ void Shell_analitzaComanda(int * sortir, Operador* stOperador, int sockGekko, se
                                 //wait del thread
                                 sem_wait(semafor);
                             }else if(sNombreAccions[i] != '\0'){
-                                write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n", strlen("\nComanda incorrecta, has d'entrar un nombre enter d'accions.\n\n"));
                             }else{
-                                write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n"));
+                                write(1, "\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n", strlen("\nComanda incorrecta, has d'entrar un nombre d'accions mes petit.\n\n"));
                             }
                         }else{
-                            write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", sizeof("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
+                            write(1, "\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n", strlen("\nComanda incorrecta, has d'entrar un nombre de ticker existent.\n\n"));
                         }
                     }else{
-                        write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+                        write(1, "\nComanda incorrecta\n\n", strlen("\nComanda incorrecta\n\n"));
                     }
                 }else{
-                    write(1, "\nComanda incorrecta\n\n", sizeof("\nComanda incorrecta\n\n"));
+                    write(1, "\nComanda incorrecta\n\n", strlen("\nComanda incorrecta\n\n"));
                 }
                 free(sNombreAccions);
             }

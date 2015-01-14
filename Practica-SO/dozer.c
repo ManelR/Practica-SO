@@ -150,7 +150,7 @@ void showIbex(Trama trama){
     char sText[101];
     bzero(sText, sizeof(sText));
     sprintf(sText, "%s\n",trama.Data);
-    write(1, sText, sizeof(sText));
+    write(1, sText, strlen(sText));
 }
 
 /*********************************************************************************************************
@@ -249,7 +249,7 @@ void sell(Trama trama){
     if (trama.Data[0] == 'E') {
         strcpy(sText, trama.Data);
         strcat(sText, "\n");
-        write(1,sText,sizeof(sText));
+        write(1,sText,strlen(sText));
     }else{
         //Rebo Nombre accions-ticker
         sAux = (char*)malloc(sizeof(char));
@@ -284,7 +284,7 @@ void sell(Trama trama){
             LlistaPDIAccio_avanca(&stOperador.llistaAccions);
         }
         free(sAux);
-        write(1,"OK. Accions posades a la venda.\n",sizeof("OK. Accions posades a la venda.\n"));
+        write(1,"OK. Accions posades a la venda.\n",strlen("OK. Accions posades a la venda.\n"));
     }
 }
 
@@ -307,7 +307,7 @@ void esborra(Trama trama){
     if (trama.Data[0] == 'E') {
         strcpy(sText, trama.Data);
         strcat(sText, "\n");
-        write(1,sText,sizeof(sText));
+        write(1,sText,strlen(sText));
     }else{
         //Rebo Nombre accions-ticker
         sAux = (char*)malloc(sizeof(char));
@@ -350,7 +350,7 @@ void esborra(Trama trama){
         }
         LlistaPDIAccio_insereix(&stOperador.llistaAccions, a);
         free(sAux);
-        write(1,"Venda anul·lada.\n",sizeof("Venda anul·lada.\n"));
+        write(1,"Venda anul·lada.\n",strlen("Venda anul·lada.\n"));
     }
 }
 
