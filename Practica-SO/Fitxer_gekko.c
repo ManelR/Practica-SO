@@ -19,7 +19,7 @@
  *********************************************************************************************************/
 
 void Fitxer_actualitzaXML(AccioXML ibex[35]){
-    int file_xml, i = 0, nActualitzaFitxer = 0;
+    int file_xml, i = 0;
     char cAux;
     char *sAux = NULL, sText[100];
     
@@ -45,36 +45,40 @@ void Fitxer_actualitzaXML(AccioXML ibex[35]){
             sAux[i] = '\0';
             sAux[strlen(sAux) - 8] = '\0';
             //Concatenar al string la informacio nova
-            sAux = (char*) realloc(sAux, (strlen(sAux) + strlen("\t<period_summary>\n")));
+            sAux = (char*) realloc(sAux, (strlen(sAux) + strlen("\t<period_summary>\n") + 1));
             strcat(sAux, "\t<period_summary>\n");
             for (i = 0; i < 35; i++) {
                 strcpy(sText, ibex[i].cTicker);
-                sAux = (char*)realloc(sAux, (strlen(sAux) + strlen("\t\t<ticker>\n\t\t\t<name></name>\n") + strlen(sText)));
+                sAux = (char*)realloc(sAux, (strlen(sAux) + strlen("\t\t<ticker>\n\t\t\t<name></name>\n") + strlen(sText) + 1));
                 strcat(sAux, "\t\t<ticker>\n");
                 strcat(sAux, "\t\t\t<name>");
                 strcat(sAux, sText);
                 strcat(sAux, "</name>\n");
                 
+                bzero(sText, sizeof(sText));
                 sprintf(sText, "%.2f", ibex[i].fPreuInicial);
-                sAux = (char*) realloc(sAux, (strlen(sAux) + strlen("\t\t\t<open></open>\n") + strlen(sText)));
+                sAux = (char*) realloc(sAux, (strlen(sAux) + strlen("\t\t\t<open></open>\n") + strlen(sText) + 1));
                 strcat(sAux, "\t\t\t<open>");
                 strcat(sAux, sText);
                 strcat(sAux, "</open>\n");
                 
+                bzero(sText, sizeof(sText));
                 sprintf(sText, "%.2f", ibex[i].fPreuFinal);
-                sAux = (char*) realloc(sAux, (strlen(sAux) + strlen("\t\t\t<close></close>\n") + strlen(sText)));
+                sAux = (char*) realloc(sAux, (strlen(sAux) + strlen("\t\t\t<close></close>\n") + strlen(sText) + 1));
                 strcat(sAux, "\t\t\t<close>");
                 strcat(sAux, sText);
                 strcat(sAux, "</close>\n");
                 
+                bzero(sText, sizeof(sText));
                 sprintf(sText, "%.2f", ibex[i].fPreuMaxim);
-                sAux = (char*)realloc(sAux, (strlen(sAux) + strlen("\t\t\t<high></high>\n") + strlen(sText)));
+                sAux = (char*)realloc(sAux, (strlen(sAux) + strlen("\t\t\t<high></high>\n") + strlen(sText) + 1));
                 strcat(sAux, "\t\t\t<high>");
                 strcat(sAux, sText);
                 strcat(sAux, "</high>\n");
                 
+                bzero(sText, sizeof(sText));
                 sprintf(sText, "%.2f", ibex[i].fPreuMinim);
-                sAux = (char*)realloc(sAux, (strlen(sAux) + strlen("\t\t\t<low></low>\n\t\t</ticker>\n\t</period_summary>\n</stock>") + strlen(sText)));
+                sAux = (char*)realloc(sAux, (strlen(sAux) + strlen("\t\t\t<low></low>\n\t\t</ticker>\n\t</period_summary>\n</stock>") + strlen(sText) + 1));
                 strcat(sAux, "\t\t\t<low>");
                 strcat(sAux, sText);
                 strcat(sAux, "</low>\n");

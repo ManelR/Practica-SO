@@ -15,6 +15,7 @@
 #define SORIGEN 14
 #define SDADES 100
 #define INTENTSCONNEXIO 5
+#define LLINDAR_MINIM 0.01
 
 Accio ibex[35];
 InfoVentes ventes[35];
@@ -270,6 +271,10 @@ void actualitzarInformacio(){
                     ibex[i].fPreu += fIncrement;
                 }else if (cOperacio == '-'){
                     ibex[i].fPreu -= fIncrement;
+                    //Comprovar que no sigui negatiu
+                    if (ibex[i].fPreu <= 0) {
+                        ibex[i].fPreu = LLINDAR_MINIM;
+                    }
                 }
             }
         }
@@ -317,7 +322,7 @@ void actualitzarInformacio(){
                     ibexXML[i].fPreuFinal = ibex[i].fPreu;
                 }
                 //Actualitzem el fitxer
-                //Fitxer_actualitzaXML(ibexXML);
+                Fitxer_actualitzaXML(ibexXML);
                 nPeticio = 0;
             }
         }
